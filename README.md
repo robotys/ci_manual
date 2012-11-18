@@ -113,7 +113,6 @@ The simplest flow of information for CodeIgniter app are as followed:
 					-dashboard.php
 			-index.php
 		  -ci_system
-```php
 
 		[dashboard.php]--------------------------
 		class Dashboard extend CI_Controller{	
@@ -121,7 +120,7 @@ The simplest flow of information for CodeIgniter app are as followed:
 				echo 'Welcome To Dashboard';
 			}
 		} 
-```
+
 	here we can see that Codeigniter will run and display 'Welcome To Dashboard'. No Models and Views involved in this example.
 
 More complex example when the data, lets say the string 'Welcome To Dashboard' is processed from models and the send to view files.
