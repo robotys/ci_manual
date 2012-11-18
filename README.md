@@ -23,8 +23,25 @@ CodeIgniter is right for you if:
 - You eschew complexity, favoring **simple solutions**.
 - You need clear, **thorough documentation**.
 
+
 Session 0 : Installation and Folder Structure Example
---------------------------------------------------
+-----------------------------------------------------
+
+This example and workshops were conducted with Windows OS. Internet connection are required (for downloading tools purposes). 
+
+Example are written using text editor Sublime Text 2. Download it [here](http://sublimetext.com) and install it.
+
+![Download Sublime Text 2](assets/sublime_download.png)
+
+*Sublime Text 2 Download Page*
+
+![Sublime Text 2 UI Example](assets/sublime_example.png)
+
+*Sublime Text Example*
+
+Apache, MySQL, PHP and PHPMyAdmin were installed using WAMPP packaged. Download it here and install it. Please make sure to install Microsoft C++ redistributable package before installing WAMPP.
+
+
 
 Download Codeigniter [here](http://codeigniter.com/download.php)
 
@@ -226,7 +243,7 @@ the three important details to be changed are:
 	
 After that, we need to create and populate a MySQL database 'test' with appropriate table and data. CI has great tools for Database Management within Database Class. The tools is Database Forge. 
 
-Create new method in m_dashboard.php called db_init and type the codes below:
+Create new method in *m_dashboard.php* called db_init and type the codes below:
 
 	class M_dashboard extend CI_Model{
 		function index_data(){
