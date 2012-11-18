@@ -1,7 +1,23 @@
-Codeigniter Workshop manual
+Codeigniter Workshop Manual
 ===========================
 
-This is to help with Codeigniter workshop as conducted by me. 
+The workshop will be held for three days with 5 session in total. Each session will start with simple explanation and hands on example. Then it is followed by excercises for the parcipant to try and experience the details of each example.
+
+Few assumptions before starting:
+
+- Participants are familiar with programming with PHP
+- Participants are using Windows OS
+- Internet connection are available
+
+Sessions Topic are as follows:
+
+- Session 0: **Environment Preparation**  
+- Session 1: **Intro to CodeIgniter (Installation and PreTest)**  
+- Session 2: **MVC Pattern With CodeIgniter**  
+- Session 3: **CodeIgniter Common Tools and Helpers**  
+- Session 4: **Custom Library and Helpers**  
+- Session 5: **CodeIgniter Best Practice**
+- Project: **Simple ACL and News Board ala Reddit**
 
 The What
 --------
@@ -24,11 +40,13 @@ CodeIgniter is right for you if:
 - You need clear, **thorough documentation**.
 
 
-Session 0 : Installation and Folder Structure Example
------------------------------------------------------
+Session 0 : Environment Preparation
+===================================
 
-This example and workshops were conducted with Windows OS. Internet connection are required (for downloading tools purposes). 
+Before we can start, we need to make sure our tools are well prepared. This workshop use only 2 tools which is Sublime Text 2 as text editor and WAMPP as our local server.
 
+Sublime Text 2
+--------------
 Example are written using text editor Sublime Text 2. Download it [here](http://sublimetext.com) and install it.
 
 ![Download Sublime Text 2](https://raw.github.com/robotys/ci_manual/master/assets/sublime_download.png)
@@ -39,8 +57,15 @@ Example are written using text editor Sublime Text 2. Download it [here](http://
 
 *Sublime Text Example*
 
+
+WAMPP
+-----
+
 Apache, MySQL, PHP and PHPMyAdmin were installed using WAMPP packaged. Download it here and install it. Please make sure to install Microsoft C++ redistributable package before installing WAMPP.
 
+
+CodeIgniter Initial Preparation
+-------------------------------
 
 
 Download Codeigniter [here](http://codeigniter.com/download.php)
@@ -110,10 +135,10 @@ Create your codeigniter App with system folder outside of your app_folder. Make 
 
 /debug
 
-Session 1: Model - View - Controller
-------------------------------------
+Session 1: MVC Pattern With CodeIgniter
+=======================================
 
-Codeigniter force the codes into MVC pattern. MVC separate the concerns of codes into 3 distinct function namely:
+Codeigniter assume the codes are structured into MVC pattern. MVC separate the concerns of codes into 3 distinct function namely:
 
 1. 	**Models**   
 	Models are where the heavy processing is done. All the business process, database operation (CRUD) is done here. We always prefer Fat Models over Fat Controller
@@ -130,7 +155,7 @@ CodeIgniter has a fairly loose approach to MVC since **Models are not required**
 The simplest flow of information for CodeIgniter app are as followed:
 
 1.	A page is requested via url. Lets say Dashboard page. The url used is http://localhost/app_name/index.php/dashboard
-2.	Codeigniter System will translate the uri and run the method **index** in class **Dashboard** form php file named **dashboard.php** inside *app_name/application/controller* folder.
+2.	Codeigniter System will translate the uri and run the method **index** in class **Dashboard** from php file named **dashboard.php** inside *app_name/application/controller* folder.
 
 		-www
 		  -app_name
@@ -140,14 +165,15 @@ The simplest flow of information for CodeIgniter app are as followed:
 			-index.php
 		  -ci_system
 	
-		[dashboard.php]--------------------------
+dashboard.php contains codes as below:
+
 		class Dashboard extend CI_Controller{	
 			function index(){
 				echo 'Welcome To Dashboard';
 			}
 		} 
 
-	here we can see that Codeigniter will run and display 'Welcome To Dashboard'. No Models and Views involved in this example.
+here we can see that Codeigniter will run and display 'Welcome To Dashboard'. No Models and Views involved in this example.
 
 More complex example when the data, lets say the string 'Welcome To Dashboard' is processed from models and the send to view files.
 
