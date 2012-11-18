@@ -31,11 +31,11 @@ This example and workshops were conducted with Windows OS. Internet connection a
 
 Example are written using text editor Sublime Text 2. Download it [here](http://sublimetext.com) and install it.
 
-![Download Sublime Text 2](assets/sublime_download.png)
+![Download Sublime Text 2](https://raw.github.com/robotys/ci_manual/master/assets/sublime_download.png)
 
 *Sublime Text 2 Download Page*
 
-![Sublime Text 2 UI Example](assets/sublime_example.png)
+![Sublime Text 2 UI Example](https://raw.github.com/robotys/ci_manual/master/assets/sublime_example.png)
 
 *Sublime Text Example*
 
@@ -98,7 +98,7 @@ Test the installation by loading the app via url: http://localhost/app_name
 
 Latest 'test page' design should be like below:
 
-![Codeigniter Welcome page](assets/ci_welcome.png)
+![Codeigniter Welcome page](https://raw.github.com/robotys/ci_manual/master/assets/ci_welcome.png)
 
 And thus your installation is now complete! For some *nightmare* you can open application folder and wonder what is all the folder and files are doing. 
 
@@ -238,10 +238,10 @@ the three important details to be changed are:
 
 	52:		$db['default']['username'] = 'root';
 	53:		$db['default']['password'] = '';
-	54:		$db['default']['database'] = 'test';
+	54:		$db['default']['database'] = 'ci_workshop';
 
 	
-After that, we need to create and populate a MySQL database 'test' with appropriate table and data. CI has great tools for Database Management within Database Class. The tools is Database Forge. 
+After that, we need to create and populate a MySQL database 'ci_workshop' with appropriate table and data. CI has great tools for Database Management within Database Class. The tools is Database Forge. 
 
 Create new method in *m_dashboard.php* called db_init and type the codes below:
 
@@ -250,7 +250,92 @@ Create new method in *m_dashboard.php* called db_init and type the codes below:
 			return 'Welcome To Dashboard';
 		}
 
-		function db_init(){
-			$this->load->
+		function db_init()
+		{
+			//load database tools
+			$this->load->dbforge();
+	
+			//create database 'ci_workshop'
+			if ($this->dbforge->create_database('ci_workshop'))
+			{
+			    echo 'Database created!<br/>';
+			}
+			
+			//declare fields for our table
+			$fields = array(
+	            'id' => array(
+	                         'type' => 'INT',
+	                         'constraint' => 5, 
+	                         'unsigned' => TRUE,
+	                         'auto_increment' => TRUE
+	                  ),
+	            'key' => array(
+	                         'type' => 'VARCHAR',
+	                         'constraint' => '100',
+	                  ),
+	            'value' => array(
+	                         'type' => 'text',
+	                  )
+	        );
+	
+			//add fields to dbforge tools
+	        $this->dbforge->add_field($fields);
+	
+	        //set column id as Primary key
+	        $this->dbforge->add_key('id', TRUE);
+	
+	        //create table if not exists
+	        $this->dbforge->create_table('kv_store', TRUE);
+	
+	        //load database
+			$this->load->database();
+	
+			//insert string value to table
+			$this->db->insert('kv_store', array('key'=>'dashboard_welcome','value'=>'Welcome To Dashboard'));
 		}
 	}
+
+Change the **dashboard.php** into this:
+
+	class Dashboard extend CI_Controller{
+		function index(){
+			$this->load->model('m_dashboard');
+			$str = $this->m_dashboard->index_data();
+			
+			$data['index'] = $str;
+			
+			$this->load->view('v_dashboard, $data);
+		}
+
+		function init_db(){
+			$this->load->model('m_dashboard');
+			$this->m_dashboard->db_init();
+
+			echo 'DB now ready!';
+		}
+	}
+
+Run the database initiation by visiting page init_db at *http://localhost/ci_workshop/index.php/dashboard/init_db*
+
+If we check in our PhpMyAdmin, we can see that new row has been added in our kv_store table as shown:
+
+![Welcome string in DB](https://raw.github.com/robotys/ci_manual/master/assets/db_welcome.png)
+
+Now, to use the strng in our models.
+
+Open our m_dashboard.php files and change the code to be like the code shown below:
+
+	class M_dashboard extend CI_Model{
+		function index_data(){
+			$this->load->database();
+
+			$this->db->where('key','dashboard_welcome');
+			$query = $this->db->get('kv_store');
+			
+			$res = $query->result_array();
+			return $res[0]['value'];
+		}
+	}
+
+When we run the dashboard page again we will get the same "Welcome To Dashboard" string but it is now reside inside a database. We thus can make a basic CRUD interface to manage the string afterwards.
+

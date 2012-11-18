@@ -1,0 +1,540 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<title>README.md</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<style type="text/css">
+body{
+    margin: 0 auto;
+    font-family: Georgia, Palatino, serif;
+    color: #444444;
+    line-height: 1;
+    max-width: 960px;
+    padding: 5px;
+}
+h1, h2, h3, h4 {
+    color: #111111;
+    font-weight: 400;
+}
+h1, h2, h3, h4, h5, p {
+    margin-bottom: 16px;
+    padding: 0;
+}
+h1 {
+    font-size: 28px;
+}
+h2 {
+    font-size: 22px;
+    margin: 20px 0 6px;
+}
+h3 {
+    font-size: 21px;
+}
+h4 {
+    font-size: 18px;
+}
+h5 {
+    font-size: 16px;
+}
+a {
+    color: #0099ff;
+    margin: 0;
+    padding: 0;
+    vertical-align: baseline;
+}
+a:hover {
+    text-decoration: none;
+    color: #ff6600;
+}
+a:visited {
+    color: purple;
+}
+ul, ol {
+    padding: 0;
+    margin: 0;
+}
+li {
+    line-height: 24px;
+    margin-left: 44px;
+}
+li ul, li ul {
+    margin-left: 24px;
+}
+p, ul, ol {
+    font-size: 14px;
+    line-height: 20px;
+    max-width: 540px;
+}
+pre {
+    padding: 0px 24px;
+    max-width: 800px;
+    white-space: pre-wrap;
+}
+code {
+    font-family: Consolas, Monaco, Andale Mono, monospace;
+    line-height: 1.5;
+    font-size: 13px;
+}
+aside {
+    display: block;
+    float: right;
+    width: 390px;
+}
+blockquote {
+    border-left:.5em solid #eee;
+    padding: 0 2em;
+    margin-left:0;
+    max-width: 476px;
+}
+blockquote  cite {
+    font-size:14px;
+    line-height:20px;
+    color:#bfbfbf;
+}
+blockquote cite:before {
+    content: '\2014 \00A0';
+}
+
+blockquote p {  
+    color: #666;
+    max-width: 460px;
+}
+hr {
+    width: 540px;
+    text-align: left;
+    margin: 0 auto 0 0;
+    color: #999;
+}
+
+button,
+input,
+select,
+textarea {
+  font-size: 100%;
+  margin: 0;
+  vertical-align: baseline;
+  *vertical-align: middle;
+}
+button, input {
+  line-height: normal;
+  *overflow: visible;
+}
+button::-moz-focus-inner, input::-moz-focus-inner {
+  border: 0;
+  padding: 0;
+}
+button,
+input[type="button"],
+input[type="reset"],
+input[type="submit"] {
+  cursor: pointer;
+  -webkit-appearance: button;
+}
+input[type=checkbox], input[type=radio] {
+  cursor: pointer;
+}
+/* override default chrome & firefox settings */
+input:not([type="image"]), textarea {
+  -webkit-box-sizing: content-box;
+  -moz-box-sizing: content-box;
+  box-sizing: content-box;
+}
+
+input[type="search"] {
+  -webkit-appearance: textfield;
+  -webkit-box-sizing: content-box;
+  -moz-box-sizing: content-box;
+  box-sizing: content-box;
+}
+input[type="search"]::-webkit-search-decoration {
+  -webkit-appearance: none;
+}
+label,
+input,
+select,
+textarea {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 13px;
+  font-weight: normal;
+  line-height: normal;
+  margin-bottom: 18px;
+}
+input[type=checkbox], input[type=radio] {
+  cursor: pointer;
+  margin-bottom: 0;
+}
+input[type=text],
+input[type=password],
+textarea,
+select {
+  display: inline-block;
+  width: 210px;
+  padding: 4px;
+  font-size: 13px;
+  font-weight: normal;
+  line-height: 18px;
+  height: 18px;
+  color: #808080;
+  border: 1px solid #ccc;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+}
+select, input[type=file] {
+  height: 27px;
+  line-height: 27px;
+}
+textarea {
+  height: auto;
+}
+
+/* grey out placeholders */
+:-moz-placeholder {
+  color: #bfbfbf;
+}
+::-webkit-input-placeholder {
+  color: #bfbfbf;
+}
+
+input[type=text],
+input[type=password],
+select,
+textarea {
+  -webkit-transition: border linear 0.2s, box-shadow linear 0.2s;
+  -moz-transition: border linear 0.2s, box-shadow linear 0.2s;
+  transition: border linear 0.2s, box-shadow linear 0.2s;
+  -webkit-box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+  -moz-box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+input[type=text]:focus, input[type=password]:focus, textarea:focus {
+  outline: none;
+  border-color: rgba(82, 168, 236, 0.8);
+  -webkit-box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1), 0 0 8px rgba(82, 168, 236, 0.6);
+  -moz-box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1), 0 0 8px rgba(82, 168, 236, 0.6);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1), 0 0 8px rgba(82, 168, 236, 0.6);
+}
+
+/* buttons */
+button {
+  display: inline-block;
+  padding: 4px 14px;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 13px;
+  line-height: 18px;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+  -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+  -moz-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+  background-color: #0064cd;
+  background-repeat: repeat-x;
+  background-image: -khtml-gradient(linear, left top, left bottom, from(#049cdb), to(#0064cd));
+  background-image: -moz-linear-gradient(top, #049cdb, #0064cd);
+  background-image: -ms-linear-gradient(top, #049cdb, #0064cd);
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #049cdb), color-stop(100%, #0064cd));
+  background-image: -webkit-linear-gradient(top, #049cdb, #0064cd);
+  background-image: -o-linear-gradient(top, #049cdb, #0064cd);
+  background-image: linear-gradient(top, #049cdb, #0064cd);
+  color: #fff;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+  border: 1px solid #004b9a;
+  border-bottom-color: #003f81;
+  -webkit-transition: 0.1s linear all;
+  -moz-transition: 0.1s linear all;
+  transition: 0.1s linear all;
+  border-color: #0064cd #0064cd #003f81;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+}
+button:hover {
+  color: #fff;
+  background-position: 0 -15px;
+  text-decoration: none;
+}
+button:active {
+  -webkit-box-shadow: inset 0 3px 7px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.05);
+  -moz-box-shadow: inset 0 3px 7px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.05);
+  box-shadow: inset 0 3px 7px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+button::-moz-focus-inner {
+  padding: 0;
+  border: 0;
+}
+
+/* CSS stylesheet is based on Kevin Burke's Markdown.css project (http://kevinburke.bitbucket.org/markdowncss) */
+</style>
+</head>
+<body>
+<h1>Codeigniter Workshop manual</h1>
+
+<p>This is to help with Codeigniter workshop as conducted by me. </p>
+
+<h2>The What</h2>
+
+<p>CodeIgniter is an Application Development Framework - a toolkit - for people who build web sites using PHP. Its goal is to enable you to <strong>develop projects much faster</strong> than you could if you were writing code from scratch, by providing a rich set of libraries for commonly needed tasks, as well as a <strong>simple interface</strong> and <strong>logical structure</strong> to access these libraries. CodeIgniter lets you creatively focus on your project by minimizing the amount of code needed for a given task.</p>
+
+<h2>The Why</h2>
+
+<p>CodeIgniter is right for you if:</p>
+
+<ul>
+<li>You want a framework with a <strong>small footprint</strong>.</li>
+<li>You need <strong>exceptional performance</strong>.</li>
+<li>You need <strong>broad compatibility with standard hosting</strong> accounts that run a variety of PHP versions and configurations.</li>
+<li>You want a framework that requires <strong>nearly zero configuration</strong>.</li>
+<li>You want a framework that <strong>does not require you to use the command line</strong>.</li>
+<li>You want a framework that <strong>does not require you to adhere to restrictive coding rules</strong>.</li>
+<li>You do not want to be forced to learn a templating language (although a template parser is optionally available if you desire one).</li>
+<li>You eschew complexity, favoring <strong>simple solutions</strong>.</li>
+<li>You need clear, <strong>thorough documentation</strong>.</li>
+</ul>
+
+<h2>Session 0 : Installation and Folder Structure Example</h2>
+
+<p>This example and workshops were conducted with Windows OS. Internet connection are required (for downloading tools purposes). </p>
+
+<p>Example are written using text editor Sublime Text 2. Download it <a href="http://sublimetext.com">here</a> and install it.</p>
+
+<p><img src="https://github.com/robotys/ci_manual/tree/master/assets/sublime_download.png" alt="Download Sublime Text 2" /></p>
+
+<p><em>Sublime Text 2 Download Page</em></p>
+
+<p><img src="https://github.com/robotys/ci_manual/tree/master/assets/sublime_example.png" alt="Sublime Text 2 UI Example" /></p>
+
+<p><em>Sublime Text Example</em></p>
+
+<p>Apache, MySQL, PHP and PHPMyAdmin were installed using WAMPP packaged. Download it here and install it. Please make sure to install Microsoft C++ redistributable package before installing WAMPP.</p>
+
+<p>Download Codeigniter <a href="http://codeigniter.com/download.php">here</a></p>
+
+<p>Extract (unzip) to home folder (www or htdocs) so it looks like this:</p>
+
+<pre><code>-www
+  -codeigniter
+    -application
+    -system
+    -user_guide
+    -index.php
+</code></pre>
+
+<p>If you like, change the name codeigniter into CI, so its simple to be called afterwards.</p>
+
+<pre><code>-www
+  -ci
+    -application
+    -system
+    -user_guide
+    -index.php
+</code></pre>
+
+<p>However, we can change the folder structure to whatever we like. Structure as depicted below are quite widely used for codeigniter:</p>
+
+<pre><code>-www
+  -app_name
+    -application
+    -index.php
+  -another_app
+    -application
+    -index.php
+  -ci_system
+</code></pre>
+
+<p>Just make sure we specify the location of systems file for the application to approriate location. Open the index.php file and change the system path to the new one:</p>
+
+<pre><code>$system_path = '../ci_system';
+</code></pre>
+
+<p>This folder structure can cater multiple application within one domain with only one codeigniter core files (system). </p>
+
+<p>This make the upgrading easier and faster. To use multiple Codeigniter core for multiple application, so that we can fallback gracefully should something happen, we can use folder structure as below:</p>
+
+<pre><code>-www
+  -app_name
+    -application
+    -index.php
+  -another_app
+    -application
+    -index.php
+  -ci_system_v21
+  -ci_system_v22
+</code></pre>
+
+<p>... and specify which application to use which version of codeigniter in its own index.php.</p>
+
+<p>Test the installation by loading the app via url: http://localhost/app_name</p>
+
+<p>Latest 'test page' design should be like below:</p>
+
+<p><img src="assets/ci_welcome.png" alt="Codeigniter Welcome page" /></p>
+
+<p>And thus your installation is now complete! For some <em>nightmare</em> you can open application folder and wonder what is all the folder and files are doing. </p>
+
+<p>(Or you can always open the user_guide folder tor the helpful documents.)</p>
+
+<blockquote>
+  <p><strong>Exercise 0: Your App</strong><br />
+  Create your codeigniter App with system folder outside of your app_folder. Make sure the test page run fine.</p>
+</blockquote>
+
+<p>/debug</p>
+
+<h2>Session 1: Model - View - Controller</h2>
+
+<p>Codeigniter force the codes into MVC pattern. MVC separate the concerns of codes into 3 distinct function namely:</p>
+
+<ol>
+<li><strong>Models</strong><br />
+Models are where the heavy processing is done. All the business process, database operation (CRUD) is done here. We always prefer Fat Models over Fat Controller</li>
+<li><strong>Controller</strong><br />
+Controller is the one who route the url to specified php class and method. Controller acts like traffic light which control the flow of data to be processed and flow of page to be display as view.</li>
+<li><strong>View</strong><br />
+View only manage the front-end aspect of our web app. All the designs/htmls and CSS are manage by view part of MVC.</li>
+</ol>
+
+<p>CodeIgniter has a fairly loose approach to MVC since <strong>Models are not required</strong>. If you don't need the added separation, or find that maintaining models requires more complexity than you want, you <strong>can ignore them</strong> and build your application minimally using Controllers and Views. </p>
+
+<blockquote>
+  <p>CodeIgniter also enables you to incorporate your own existing scripts, or even develop core libraries for the system, enabling you to work in a way that makes the most sense to you.</p>
+</blockquote>
+
+<p>The simplest flow of information for CodeIgniter app are as followed:</p>
+
+<ol>
+<li>A page is requested via url. Lets say Dashboard page. The url used is http://localhost/app_name/index.php/dashboard</li>
+<li><p>Codeigniter System will translate the uri and run the method <strong>index</strong> in class <strong>Dashboard</strong> form php file named <strong>dashboard.php</strong> inside <em>app_name/application/controller</em> folder.</p>
+
+<pre><code>-www
+  -app_name
+    -application
+        -controllers
+            -dashboard.php
+    -index.php
+  -ci_system
+
+
+[dashboard.php]--------------------------
+class Dashboard extend CI_Controller{   
+    function index(){
+        echo 'Welcome To Dashboard';
+    }
+} 
+</code></pre>
+
+<p>here we can see that Codeigniter will run and display 'Welcome To Dashboard'. No Models and Views involved in this example.</p></li>
+</ol>
+
+<p>More complex example when the data, lets say the string 'Welcome To Dashboard' is processed from models and the send to view files.</p>
+
+<p>For this example we will create two new files at <em>application/models/m_dashboard.php</em> and another one at <em>application/view/v_dashboard.php</em>:</p>
+
+<pre><code>-www
+  -app_name
+    -application
+        -controllers
+            -dashboard.php
+        -models
+            -m_dashboard.php
+        -views
+            -v_dashboard.php
+    -index.php
+  -ci_system
+</code></pre>
+
+<p>Change the <strong>dashboard.php</strong> into this:</p>
+
+<pre><code>class Dashboard extend CI_Controller{
+    function index(){
+        $this-&gt;load-&gt;model('m_dashboard');
+        $str = $this-&gt;m_dashboard-&gt;index_data();
+
+        $data['index'] = $str;
+
+        $this-&gt;load-&gt;view('v_dashboard, $data);
+    }
+}
+</code></pre>
+
+<p>As we can see, the dashboard controller will first load the models that it need by using load method. This load method is inherited from CI_Controller parent. </p>
+
+<p>All models loaded can then be called via <em>$this->model_name->model_method()</em> to initiate the models method process. Here we will run method <em>index_data()</em> which will return the string 'Welcome To Dashboard'.</p>
+
+<p>Fill the <strong>m_dashboard.php</strong> file with codes as below:</p>
+
+<pre><code>class M_dashboard extend CI_Model{
+    function index_data(){
+        return 'Welcome To Dashboard';
+    }
+}
+</code></pre>
+
+<p>It is really direct. The code will return string 'Welcome To Dashboard' to whoever calling it.</p>
+
+<p>As per example, the one who call it is variable $str in dashboard controller.</p>
+
+<p>The string then loaded into array $data with key 'index' and sent to view via load method second parameter as shown in the example.</p>
+
+<pre><code>$this-&gt;load-&gt;view('view_files', $second_parameter);
+</code></pre>
+
+<p>THe view files then will capture the string into new variable based on the key. So here, the key contain the string within array data is 'index', thus in view files codeigniter will spawn new variable with the name $index containing the string.</p>
+
+<p>Fill in the <strong>v_dashboard.php</strong> files with the codes below:</p>
+
+<pre><code>&lt;html&gt;
+    &lt;head&gt;
+        &lt;title&gt;Dashboard&lt;/title&gt;
+    &lt;/head&gt;
+&lt;body&gt;
+    &lt;?php
+        echo '&lt;h1&gt;'.$index.'&lt;/h1&gt;';
+    ?&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+
+<p>We can see that v_dashboard.php resembles a lot like plain html files. Keep in mind that view files are like front end template to our application and we will populate it from data sent from controller. Example here is the string 'Welcome To Dashboard' which was sent in variable $index.</p>
+
+<blockquote>
+  <p><strong>Exercise 1: Add new page</strong><br />
+  Add new page which is linked from dashboard to url <em>http://localhost/app_name/index.php/dashboard/info</em> . The view page should display php_info() details.</p>
+  
+  <p><strong>Exercise 2: Views List</strong><br />
+  Add new page which is linked from dashboard to url <em>http://localhost/app_name/index.php/admin/view_list</em> . The view page should display all file names within view directory dynamically.</p>
+</blockquote>
+
+<h2>Session 1.1: MVC with string from MySQL DB</h2>
+
+<p>A lot of data we need usually reside in mysql database. Codeigniter is not limited to only MySQL. In fact CI can connect to multitude of DB engine via its powerful DB connectors wizard.</p>
+
+<p>But MySQL is good enough for example.</p>
+
+<p>Before we start we need to have the connection to MySQL DB.</p>
+
+<p>Open database.php within config directory located at <em>www/app_name/application/config/database.php</em>. Change the details to reflect your MySQL connection. As this is local MySQL under WAMP, we can just use the default username and password.</p>
+
+<p>the three important details to be changed are:</p>
+
+<pre><code>52:     $db['default']['username'] = 'root';
+53:     $db['default']['password'] = '';
+54:     $db['default']['database'] = 'test';
+</code></pre>
+
+<p>After that, we need to create and populate a MySQL database 'test' with appropriate table and data. CI has great tools for Database Management within Database Class. The tools is Database Forge. </p>
+
+<p>Create new method in <em>m_dashboard.php</em> called db_init and type the codes below:</p>
+
+<pre><code>class M_dashboard extend CI_Model{
+    function index_data(){
+        return 'Welcome To Dashboard';
+    }
+
+    function db_init(){
+        $this-&gt;load-&gt;
+    }
+}
+</code></pre>
+
+</body>
+</html>
+<!-- This document was created with MarkdownPad, the Markdown editor for Windows (http://markdownpad.com) -->
