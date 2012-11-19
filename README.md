@@ -64,8 +64,8 @@ WAMPP
 Apache, MySQL, PHP and PHPMyAdmin were installed using WAMPP packaged. Download it here and install it. Please make sure to install Microsoft C++ redistributable package before installing WAMPP.
 
 
-CodeIgniter Initial Preparation
--------------------------------
+Session 1:  Intro to CodeIgniter (Installation and PreTest)
+===========================================================
 
 
 Download Codeigniter [here](http://codeigniter.com/download.php)
@@ -135,7 +135,7 @@ Create your codeigniter App with system folder outside of your app_folder. Make 
 
 /debug
 
-Session 1: MVC Pattern With CodeIgniter
+Session 2: MVC Pattern With CodeIgniter
 =======================================
 
 Codeigniter assume the codes are structured into MVC pattern. MVC separate the concerns of codes into 3 distinct function namely:
@@ -165,14 +165,17 @@ The simplest flow of information for CodeIgniter app are as followed:
 			-index.php
 		  -ci_system
 	
-dashboard.php contains codes as below:
+	dashboard.php contains codes as below:
 
-		class Dashboard extend CI_Controller{	
-			function index(){
-				echo 'Welcome To Dashboard';
-			}
-		} 
-
+```php
+	class Dashboard extend CI_Controller{	
+		function index(){
+			echo 'Welcome To Dashboard';
+		}
+	} 
+```	
+		
+	
 here we can see that Codeigniter will run and display 'Welcome To Dashboard'. No Models and Views involved in this example.
 
 More complex example when the data, lets say the string 'Welcome To Dashboard' is processed from models and the send to view files.
@@ -192,7 +195,9 @@ For this example we will create two new files at *application/models/m_dashboard
 	  -ci_system
 
 Change the **dashboard.php** into this:
+	
 
+```php
 	class Dashboard extend CI_Controller{
 		function index(){
 			$this->load->model('m_dashboard');
@@ -203,6 +208,8 @@ Change the **dashboard.php** into this:
 			$this->load->view('v_dashboard, $data);
 		}
 	}
+```
+	
 
 As we can see, the dashboard controller will first load the models that it need by using load method. This load method is inherited from CI_Controller parent. 
 
@@ -227,7 +234,9 @@ The string then loaded into array $data with key 'index' and sent to view via lo
 THe view files then will capture the string into new variable based on the key. So here, the key contain the string within array data is 'index', thus in view files codeigniter will spawn new variable with the name $index containing the string.
 
 Fill in the **v_dashboard.php** files with the codes below:
+	
 
+```php
 	<html>
 		<head>
 			<title>Dashboard</title>
@@ -238,7 +247,7 @@ Fill in the **v_dashboard.php** files with the codes below:
 		?>
 	</body>
 	</html>
-
+```
 We can see that v_dashboard.php resembles a lot like plain html files. Keep in mind that view files are like front end template to our application and we will populate it from data sent from controller. Example here is the string 'Welcome To Dashboard' which was sent in variable $index.
 
 > **Exercise 1: Add new page**    
@@ -249,7 +258,7 @@ We can see that v_dashboard.php resembles a lot like plain html files. Keep in m
 > Add new page which is linked from dashboard to url *http://localhost/app_name/index.php/admin/view_list* . The view page should display all file names within view directory dynamically.
 
 
-Session 1.1: MVC with string from MySQL DB
+Session 2.1: MVC with string from MySQL DB
 ------------------------------------------
 
 A lot of data we need usually reside in mysql database. Codeigniter is not limited to only MySQL. In fact CI can connect to multitude of DB engine via its powerful DB connectors wizard.
@@ -261,16 +270,20 @@ Before we start we need to have the connection to MySQL DB.
 Open database.php within config directory located at *www/app_name/application/config/database.php*. Change the details to reflect your MySQL connection. As this is local MySQL under WAMP, we can just use the default username and password.
 
 the three important details to be changed are:
+	
 
+```php 
 	52:		$db['default']['username'] = 'root';
 	53:		$db['default']['password'] = '';
 	54:		$db['default']['database'] = 'ci_workshop';
-
+```
 	
 After that, we need to create and populate a MySQL database 'ci_workshop' with appropriate table and data. CI has great tools for Database Management within Database Class. The tools is Database Forge. 
 
 Create new method in *m_dashboard.php* called db_init and type the codes below:
+	
 
+```php
 	class M_dashboard extend CI_Model{
 		function index_data(){
 			return 'Welcome To Dashboard';
@@ -320,9 +333,13 @@ Create new method in *m_dashboard.php* called db_init and type the codes below:
 			$this->db->insert('kv_store', array('key'=>'dashboard_welcome','value'=>'Welcome To Dashboard'));
 		}
 	}
+```
+	
 
 Change the **dashboard.php** into this:
+	
 
+```php
 	class Dashboard extend CI_Controller{
 		function index(){
 			$this->load->model('m_dashboard');
@@ -340,6 +357,8 @@ Change the **dashboard.php** into this:
 			echo 'DB now ready!';
 		}
 	}
+```
+	
 
 Run the database initiation by visiting page init_db at *http://localhost/ci_workshop/index.php/dashboard/init_db*
 
@@ -364,4 +383,356 @@ Open our m_dashboard.php files and change the code to be like the code shown bel
 	}
 
 When we run the dashboard page again we will get the same "Welcome To Dashboard" string but it is now reside inside a database. We thus can make a basic CRUD interface to manage the string afterwards.
+
+	
+
+Session 3: CodeIgniter Common Tools and Helpers  
+===============================================
+	
+CodeIgniter come with multitude of tools to help our application development. Anything that is conceived for us to be used should already be there in CodeIgniter bag of tools.
+	
+The tools come from two different place namely Library and Helpers.
+	
+Codeigniter Library
+-------------------
+
+CodeIgniter Library is a collection of PHP **Class** which focus on single domain of usage. Among widely use Codeigniter Library are:
+
+- **Session Class**  
+	Manage $_SESSION but we can choose to make the session either as protected cookies or a table in DB.
+- **Form Validation Class**   
+	Manage input validation before processing. Use with Input Class. Validation include email validation, min,max, numeric, alphanumeric and custom function (usually to check username availability). 
+- **Input Class**   
+	Manage native $_POST, $_GET and $_SERVER global variable. Automatically sanitize the value before process. 
+- **Email Class**  
+	Ultimate tools to send email via PHP script. All type of configuration and email types (plain text, html email, attachment) available.
+- **File Uploading Class**   
+	Manage file uploads function gracefully. Simple and elegant solution.
+- **URI Class**   
+	To help with URL segmentation and manipulation. From URI string to array and vice versa. Best used to manage complex ACL.
+- **Database Class**   
+	The most beloved class especially in Model. Among smaller tools within database class is Active Record which can add structure and logic to our SQL query.
+- **Caching Class**   
+	Simple yet effective caching solution. Can be extend to use external caching tools to make it more efficient and powerfull.
+
+
+Codeigniter Helper
+------------------
+
+Codeigniter Helper is a collection of **functions** that can be use to help us in developing our application. Helpers differ from Library in sense of helper is a function while Library is a method within a class. Helpers is more focused as a tool and thus only cater limited usage space.
+	
+Among usefull helpers are:
+
+- **Download Helper**   
+	Assist us in creating a download page. All type of files can be used. received filename and binary data as parameters. 
+
+- **Email Helper**   
+	Two functions within this helper are ```valid_email('string@email')``` to validate email string and ```send_email('recipient','subject','message')``` to send plain text email. Simple and functional.
+
+- **Form Helper**   
+	Assist us in creating html form and input tags. May not be shorter than html but its usefullness come from its powerfull logic and configurations.
+
+- **URL Helper**   
+	Assist us in generating uri within Codeigniter application. Thus we not need to change every links as it is now dynamically generated by codeigniter.
+
+
+Some of the library need to be loaded first before it can be used while other are automatically loaded. Helpers are always needed to be loaded.
+
+Below are the functionlity of said Class and Helpers:
+	
+Session Class
+-------------
+
+The Session class permits you maintain a user's "state" and track their activity while they browse your site. The Session class stores session information for each user as serialized (and optionally encrypted) data in a cookie. 
+	
+It can also store the session data in a database table for added security, as this permits the session ID in the user's cookie to be matched against the stored session ID. By default only the cookie is saved. If you choose to use the database option you'll need to create the session table as indicated below.
+
+**INITIALIZE**
+
+Sessions will typically run globally with each page load, so the session class must either be initialized in your controller constructors, or it can be auto-loaded by the system. For the most part the session class will run unattended in the background, so simply initializing the class will cause it to read, create, and update sessions.
+
+To initialize the Session class manually in your controller constructor, use the ```$this->load->library``` function:
+
+```$this->load->library('session');```
+
+Once loaded, the Sessions library object will be available using: ```$this->session```
+
+**How do Sessions work?**
+
+When a page is loaded, the session class will check to see if valid session data exists in the user's session cookie. If sessions data does not exist (or if it has expired) a new session will be created and saved in the cookie. If a session does exist, its information will be updated and the cookie will be updated. With each update, the session_id will be regenerated.
+
+It's important for you to understand that once initialized, the Session class runs automatically. There is nothing you need to do to cause the above behavior to happen. You can, as you'll see below, work with session data or even add your own data to a user's session, but the process of reading, writing, and updating a session is automatic.
+
+**USAGE**
+	
+		
+	//Load the library
+		$this->load->library('session');
+	
+	//set new session value like array.
+		$this->session->set_userdata($array); 
+	///usage:
+		$newdata = array(
+	                   'username'  => 'johndoe',
+	                   'email'     => 'johndoe@some-site.com',
+	                   'logged_in' => TRUE
+	               );
+
+		$this->session->set_userdata($newdata);
+	//or like this also can:
+		$this->session->set_userdata('some_name', 'some_value');
+
+	//retrieve session with key 'item'
+		$this->session->userdata('item'); 
+	//example of usage: 
+		$session_id = $this->session->userdata('session_id');
+	
+	
+	//Retrieve All Session Data
+		$this->session->all_userdata()
+	
+	//Unset Session Data
+		$this->session->unset_userdata('some_name');
+	
+	//Session Destroy
+		$this->session->sess_destroy();
+
+Thats a simple all in one how to use Codeigniter Session Library
+
+> **Brain Nuggets:**   
+	Think a login and login system using Codeigniter Session
+
+	
+Form Validation
+---------------
+
+
+**OVERVIEW**
+
+Before explaining CodeIgniter's approach to data validation, let's describe the ideal scenario:
+
+1. A form is displayed.
+2. You fill it in and submit it.
+3. If you submitted something invalid, or perhaps missed a required item, the form is redisplayed containing your data along with an error message describing the problem.
+4. This process continues until you have submitted a valid form.
+
+On the receiving end, the script must:
+
+1. Check for required data.
+2. Verify that the data is of the correct type, and meets the correct criteria. For example, if a username is submitted it must be validated to contain only permitted characters. It must be of a minimum length, and not exceed a maximum length. The username can't be someone else's existing username, or perhaps even a reserved word. Etc.
+3. Sanitize the data for security.
+4. Pre-format the data if needed (Does the data need to be trimmed? HTML encoded? Etc.)
+5. Prep the data for insertion in the database.
+
+Although there is nothing terribly complex about the above process, it usually requires a significant amount of code, and to display error messages, various control structures are usually placed within the form HTML. Form validation, while simple to create, is generally very messy and tedious to implement.
+
+
+**Form Validation Tutorial**
+
+What follows is a "hands on" tutorial for implementing CodeIgniters Form Validation.
+
+In order to implement form validation you'll need three things:
+
+A View file containing a form.
+A View file containing a "success" message to be displayed upon successful submission.
+A controller function to receive and process the submitted data.
+Let's create those three things, using a member sign-up form as the example.
+
+**The Form**
+
+Using a text editor, create a form called myform.php. In it, place this code and save it to your applications/views/ folder:
+
+	<html>
+	<head>
+	<title>My Form</title>
+	</head>
+	<body>
+
+	<?php echo validation_errors('<div class="error">', '</div>'); ?>
+
+	<?php echo form_open('form'); ?>
+
+	<h5>Username</h5>
+	<input type="text" name="username" value="<?php echo set_value('username'); ?>" size="50" />
+
+	<h5>Password</h5>
+	<input type="text" name="password" value="<?php echo set_value('password'); ?>" size="50" />
+
+	<h5>Password Confirm</h5>
+	<input type="text" name="passconf" value="<?php echo set_value('passconf'); ?>" size="50" />
+
+	<h5>Email Address</h5>
+	<input type="text" name="email" value="<?php echo set_value('email'); ?>" size="50" />
+
+	<div><input type="submit" value="Submit" /></div>
+
+	</form>
+
+	</body>
+	</html>
+
+
+**The Success Page**
+
+Using a text editor, create a form called formsuccess.php. In it, place this code and save it to your applications/views/ folder:
+
+	<html>
+	<head>
+	<title>My Form</title>
+	</head>
+	<body>
+
+	<h3>Your form was successfully submitted!</h3>
+
+	<p><?php echo anchor('form', 'Try it again!'); ?></p>
+
+	</body>
+	</html>
+
+
+**The Controller**
+
+Using a text editor, create a controller called form.php. In it, place this code and save it to your applications/controllers/ folder:
+
+
+	class Form extends CI_Controller {
+
+		function index()
+		{
+			
+		//load form and url helper
+			$this->load->helper(array('form', 'url'));
+				
+		//load form validation class
+			$this->load->library('form_validation');
+				
+		//set validation rules for all 
+			$this->form_validation->set_rules('username', 'Username', 'trim|callback_username_check|required|min_length[5]|max_length[12]|xss_clean');
+			$this->form_validation->set_rules('password', 'Password', 'trim|required|matches[passconf]|md5');
+			$this->form_validation->set_rules('passconf', 'Password Confirmation', 'trim|required');
+			$this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email');
+
+		//run validation, if false display myform, if true display formsuccess		
+			if ($this->form_validation->run() == FALSE)
+			{
+				$this->load->view('myform');
+			}
+			else
+			{
+				$this->load->view('formsuccess');
+			}
+		}
+	
+		
+		//Special function to check if the username is allowed to be used.
+		public function username_check($str)
+		{
+			if ($str == 'test')
+			{
+			
+			//set error message for username_check rules.
+				$this->form_validation->set_message('username_check', 'The %s field can not be the word "test"');
+				return FALSE;
+			}
+			else
+			{
+				return TRUE;
+			}
+		}
+			
+		
+	}
+	
+
+To test the application, open ```http://localhost/ci_workshop/index.php/form```, complete the form and hit enter. Play with the application to try the validation.
+	
+**EXPLAINATION**
+
+There is three main section of Form Validation Class which is 1: Error Display, 2: Validation Rules and 3: Run Validation. The one with the most complexity among the three are Validation Rules.
+	
+The validation process basically are like below:
+	
+1. Validation start with capturing the input from html form via input class.
+2. The value then will be run through all the required rules which has been setup in validation rules section.
+3. Any error while validating will be notified via Error Display function (validation_errors).
+
+
+Input Clas
+----------
+Email Class
+-----------
+File Uploading Class
+--------------------
+URI Class
+---------
+Database Class
+--------------
+Caching Class
+-------------
+Download Helper
+---------------
+Email Helper
+------------
+Form Helper
+-----------
+URL Helper
+----------
+
+
+Both Library Class and Helpers function can be use and fused together to create new Library or Helpers. That new lib
+
+	
+
+Session 4: Custom Library and Helpers
+=====================================
+
+
+
+
+
+Session 5: CodeIgniter Best Practice
+====================================
+
+	
+
+Project: News Board (ala HackerNews)
+====================================
+
+Phase 1: Wireframe and UI design (Pen + Paper)
+----------------------------------------------
+	
+Phase 2: Site Structure and Navigation (CI)
+-------------------------------------------
+	
+Phase 3: Registration and Login System
+--------------------------------------
+	
+Phase 4: News Board CRUD
+------------------------
+	
+Phase 5: Discussion CRUD
+------------------------
+
+	
+
+
+
+	
+
+
+	
+
+
+	
+
+
+
+Project 1: Simple ACL with CodeIgniter
+
+
+	
+
+ 
+	
+
 
