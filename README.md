@@ -453,7 +453,7 @@ Sessions will typically run globally with each page load, so the session class m
 
 To initialize the Session class manually in your controller constructor, use the ```$this->load->library``` function:
 
-```$this->load->library('session');```
+	$this->load->library('session');
 
 Once loaded, the Sessions library object will be available using: ```$this->session```
 
