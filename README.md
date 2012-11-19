@@ -890,35 +890,2196 @@ The following is a list of all the native rules that are available to use:
 
 </table>
 
-<p><strong>Note:</strong> These rules can also be called as discrete functions. For example:</p>
+> Note: These rules can also be called as discrete functions. For example:   
+	```$this->form_validation->required($string)```
 
-<code>$this->form_validation->required($string);</code>
-
-<p class="important"><strong>Note:</strong> You can also use any native PHP functions that permit one parameter.</p>
+> Note: You can also use any native PHP functions that permit one parameter.
 
 
 Input Clas
 ----------
+
+The Input Class serves two purposes:
+
+- It pre-processes global input data for security.
+- It provides some helper functions for fetching input data and pre-processing it.
+
+>Note: This class is initialized automatically by the system so there is no need to do it manually.
+
+**Security Filtering**
+
+The security filtering function is called automatically when a new controller is invoked. It does the following:
+
+- If $config['allow_get_array'] is FALSE(default is TRUE), destroys the global GET array.
+- Destroys all global variables in the event register_globals is turned on.
+- Filters the GET/POST/COOKIE array keys, permitting only alpha-numeric (and a few other) characters.
+- Provides XSS (Cross-site Scripting Hacks) filtering. This can be enabled globally, or upon request.
+- Standardizes newline characters to \n(In Windows \r\n)
+- XSS Filtering
+
+The Input class has the ability to filter input automatically to prevent cross-site scripting attacks. If you want the filter to run automatically every time it encounters POST or COOKIE data you can enable it by opening your application/config/config.php file and setting this:
+
+	$config['global_xss_filtering'] = TRUE;
+	
+Please refer to the Security class documentation for information on using XSS Filtering in your application.
+
+**Using POST, COOKIE, or SERVER Data**
+
+CodeIgniter comes with three helper functions that let you fetch POST, COOKIE or SERVER items. The main advantage of using the provided functions rather than fetching an item directly ($_POST['something']) is that the functions will check to see if the item is set and return false (boolean) if not. This lets you conveniently use data without having to test whether an item exists first. In other words, normally you might do something like this:
+
+	if ( ! isset($_POST['something']))
+	{
+	    $something = FALSE;
+	}
+	else
+	{
+	    $something = $_POST['something'];
+	}
+
+With CodeIgniter's built in functions you can simply do this:
+
+	$something = $this->input->post('something');
+
+The three functions are:
+
+- ```$this->input->post()```
+- ```$this->input->cookie()```
+- ```$this->input->server()```
+	
+
+**$this->input->post()**
+
+The first parameter will contain the name of the POST item you are looking for:
+
+	$this->input->post('some_data');
+
+The function returns FALSE (boolean) if the item you are attempting to retrieve does not exist.
+
+The second optional parameter lets you run the data through the XSS filter. It's enabled by setting the second parameter to boolean TRUE;
+
+	$this->input->post('some_data', TRUE);
+
+To return an array of all POST items call without any parameters.
+
+To return all POST items and pass them through the XSS filter set the first parameter NULL while setting the second parameter to boolean;
+
+The function returns FALSE (boolean) if there are no items in the POST.
+
+	$this->input->post(NULL, TRUE); // returns all POST items with XSS filter 
+	$this->input->post(); // returns all POST items without XSS filter
+
+**$this->input->get()**
+
+This function is identical to the post function, only it fetches get data:
+
+	$this->input->get('some_data', TRUE);
+
+To return an array of all GET items call without any parameters.
+
+To return all GET items and pass them through the XSS filter set the first parameter NULL while setting the second parameter to boolean;
+
+The function returns FALSE (boolean) if there are no items in the GET.
+
+	$this->input->get(NULL, TRUE); // returns all GET items with XSS filter 
+	$this->input->get(); // returns all GET items without XSS filtering
+
+**$this->input->get_post()**
+
+This function will search through both the post and get streams for data, looking first in post, and then in get:
+
+	$this->input->get_post('some_data', TRUE);
+
+**$this->input->cookie()**
+
+This function is identical to the post function, only it fetches cookie data:
+
+	$this->input->cookie('some_data', TRUE);
+
+**$this->input->server()**
+
+This function is identical to the above functions, only it fetches server data:
+
+	$this->input->server('some_data');
+
+**$this->input->set_cookie()**
+
+Sets a cookie containing the values you specify. There are two ways to pass information to this function so that a cookie can be set: Array Method, and Discrete Parameters:
+
+*Array Method*
+
+Using this method, an associative array is passed to the first parameter:
+
+	$cookie = array(
+	    'name'   => 'The Cookie Name',
+	    'value'  => 'The Value',
+	    'expire' => '86500',
+	    'domain' => '.some-domain.com',
+	    'path'   => '/',
+	    'prefix' => 'myprefix_',
+	    'secure' => TRUE
+	);
+
+	$this->input->set_cookie($cookie);
+
+> Notes:   
+> Only the name and value are required. To delete a cookie set it with the expiration blank.
+> The expiration is set in seconds, which will be added to the current time. Do not include the time, but rather only the number of seconds from now that you wish the cookie to be valid. If the expiration is set to zero the cookie will only last as long as the browser is open.
+> For site-wide cookies regardless of how your site is requested, add your URL to the domain starting with a period, like this: .your-domain.com
+> The path is usually not needed since the function sets a root path.
+> The prefix is only needed if you need to avoid name collisions with other identically named cookies for your server.
+> The secure boolean is only needed if you want to make it a secure cookie by setting it to TRUE.
+
+*Discrete Parameters*
+
+If you prefer, you can set the cookie by passing data using individual parameters:
+
+	$this->input->set_cookie($name, $value, $expire, $domain, $path, $prefix, $secure);
+
+**$this->input->cookie()**
+
+Lets you fetch a cookie. The first parameter will contain the name of the cookie you are looking for (including any prefixes):
+
+	cookie('some_cookie');
+
+The function returns FALSE (boolean) if the item you are attempting to retrieve does not exist.
+
+The second optional parameter lets you run the data through the XSS filter. It's enabled by setting the second parameter to boolean TRUE;
+
+	cookie('some_cookie', TRUE);
+
+**$this->input->ip_address()**
+
+Returns the IP address for the current user. If the IP address is not valid, the function will return an IP of: 0.0.0.0
+
+	echo $this->input->ip_address();
+	$this->input->valid_ip($ip)
+
+Takes an IP address as input and returns TRUE or FALSE (boolean) if it is valid or not. Note: The $this->input->ip_address() function above validates the IP automatically.
+
+	if ( ! $this->input->valid_ip($ip))
+	{
+	     echo 'Not Valid';
+	}
+	else
+	{
+	     echo 'Valid';
+	}
+
+
 Email Class
 -----------
+
+CodeIgniter's robust Email Class supports the following features:
+
+- Multiple Protocols: Mail, Sendmail, and SMTP
+- Multiple recipients
+- CC and BCCs
+- HTML or Plaintext email
+- Attachments
+- Word wrapping
+- Priorities
+- BCC Batch Mode, enabling large email lists to be broken into small BCC batches.
+- Email Debugging tools
+
+	
+**Sending Email**
+
+Sending email is not only simple, but you can configure it on the fly or set your preferences in a config file.
+
+Here is a basic example demonstrating how you might send email. Note: This example assumes you are sending the email from one of your controllers.
+
+	$this->load->library('email');
+
+	$this->email->from('your@example.com', 'Your Name');
+	$this->email->to('someone@example.com'); 
+	$this->email->cc('another@another-example.com'); 
+	$this->email->bcc('them@their-example.com'); 
+
+	$this->email->subject('Email Test');
+	$this->email->message('Testing the email class.');	
+
+	$this->email->send();
+
+	echo $this->email->print_debugger();
+	
+Email Function Reference
+------------------------
+
+**$this->email->from()**
+
+Sets the email address and name of the person sending the email:
+
+	$this->email->from('you@example.com', 'Your Name');
+
+	
+**$this->email->reply_to()**
+
+Sets the reply-to address. If the information is not provided the information in the "from" function is used. Example:
+
+	$this->email->reply_to('you@example.com', 'Your Name');
+
+	
+**$this->email->to()**
+
+Sets the email address(s) of the recipient(s). Can be a single email, a comma-delimited list or an array:
+
+	$this->email->to('someone@example.com');
+	$this->email->to('one@example.com, two@example.com, three@example.com');
+	$list = array('one@example.com', 'two@example.com', 'three@example.com');
+
+	$this->email->to($list);
+
+**$this->email->cc()**
+
+Sets the CC email address(s). Just like the "to", can be a single email, a comma-delimited list or an array.
+
+**$this->email->bcc()**
+
+Sets the BCC email address(s). Just like the "to", can be a single email, a comma-delimited list or an array.
+
+**$this->email->subject()**
+
+Sets the email subject:
+
+	$this->email->subject('This is my subject');
+
+	
+**$this->email->message()**
+
+Sets the email message body:
+
+	$this->email->message('This is my message');
+
+**$this->email->set_alt_message()**
+
+Sets the alternative email message body:
+
+	$this->email->set_alt_message('This is the alternative message');
+
+This is an optional message string which can be used if you send HTML formatted email. It lets you specify an alternative message with no HTML formatting which is added to the header string for people who do not accept HTML email. If you do not set your own message CodeIgniter will extract the message from your HTML email and strip the tags.
+
+**$this->email->clear()**
+
+Initializes all the email variables to an empty state. This function is intended for use if you run the email sending function in a loop, permitting the data to be reset between cycles.
+
+	foreach ($list as $name => $address)
+	{
+	    $this->email->clear();
+
+	    $this->email->to($address);
+	    $this->email->from('your@example.com');
+	    $this->email->subject('Here is your info '.$name);
+	    $this->email->message('Hi '.$name.' Here is the info you requested.');
+	    $this->email->send();
+	}
+
+If you set the parameter to TRUE any attachments will be cleared as well:
+
+	$this->email->clear(TRUE);
+
+	
+**$this->email->send()**
+
+The Email sending function. Returns boolean TRUE or FALSE based on success or failure, enabling it to be used conditionally:
+
+	if ( ! $this->email->send())
+	{
+	    // Generate error
+	}
+
+**$this->email->attach()**
+
+Enables you to send an attachment. Put the file path/name in the first parameter. Note: Use a file path, not a URL. For multiple attachments use the function multiple times. For example:
+
+	$this->email->attach('/path/to/photo1.jpg');
+	$this->email->attach('/path/to/photo2.jpg');
+	$this->email->attach('/path/to/photo3.jpg');
+
+	$this->email->send();
+
+	
+**$this->email->print_debugger()**
+
+Returns a string containing any server messages, the email headers, and the email messsage. Useful for debugging.
+	
+
+
+
 File Uploading Class
 --------------------
+	
+CodeIgniter's File Uploading Class permits files to be uploaded. You can set various preferences, restricting the type and size of the files.
+
+**The Process**
+
+Uploading a file involves the following general process:
+
+An upload form is displayed, allowing a user to select a file and upload it.
+When the form is submitted, the file is uploaded to the destination you specify.
+Along the way, the file is validated to make sure it is allowed to be uploaded based on the preferences you set.
+Once uploaded, the user will be shown a success message.
+To demonstrate this process here is brief tutorial. Afterward you'll find reference information.
+
+**Creating the Upload Form**
+
+Using a text editor, create a form called upload_form.php. In it, place this code and save it to your applications/views/ folder:
+
+	<html>
+	<head>
+	<title>Upload Form</title>
+	</head>
+	<body>
+
+	<?php echo $error;?>
+
+	<?php echo form_open_multipart('upload/do_upload');?>
+
+	<input type="file" name="userfile" size="20" />
+
+	<br /><br />
+
+	<input type="submit" value="upload" />
+
+	</form>
+
+	</body>
+	</html>
+
+
+You'll notice we are using a form helper to create the opening form tag. File uploads require a multipart form, so the helper creates the proper syntax for you. You'll also notice we have an $error variable. This is so we can show error messages in the event the user does something wrong.
+
+**The Success Page**
+
+Using a text editor, create a form called upload_success.php. In it, place this code and save it to your applications/views/ folder:
+
+	<html>
+	<head>
+	<title>Upload Form</title>
+	</head>
+	<body>
+
+	<h3>Your file was successfully uploaded!</h3>
+
+	<ul>
+	<?php foreach ($upload_data as $item => $value):?>
+	<li><?php echo $item;?>: <?php echo $value;?></li>
+	<?php endforeach; ?>
+	</ul>
+
+	<p><?php echo anchor('upload', 'Upload Another File!'); ?></p>
+
+	</body>
+	</html>
+		
+	
+**The Controller**
+
+Using a text editor, create a controller called upload.php. In it, place this code and save it to your applications/controllers/ folder:
+
+	<?php
+
+	class Upload extends CI_Controller {
+
+		function __construct()
+		{
+			parent::__construct();
+			$this->load->helper(array('form', 'url'));
+		}
+
+		function index()
+		{
+			$this->load->view('upload_form', array('error' => ' ' ));
+		}
+
+		function do_upload()
+		{
+			$config['upload_path'] = './uploads/';
+			$config['allowed_types'] = 'gif|jpg|png';
+			$config['max_size']	= '100';
+			$config['max_width']  = '1024';
+			$config['max_height']  = '768';
+
+			$this->load->library('upload', $config);
+
+			if ( ! $this->upload->do_upload())
+			{
+				$error = array('error' => $this->upload->display_errors());
+
+				$this->load->view('upload_form', $error);
+			}
+			else
+			{
+				$data = array('upload_data' => $this->upload->data());
+
+				$this->load->view('upload_success', $data);
+			}
+		}
+	}
+	?>
+
+**The Upload Folder**
+
+You'll need a destination folder for your uploaded images. Create a folder at the root of your CodeIgniter installation called uploads and set its file permissions to 777.
+
+**Try it!z**
+
+To try your form, visit your site using a URL similar to this one:
+
+	example.com/index.php/upload/
+
+You should see an upload form. Try uploading an image file (either a jpg, gif, or png). If the path in your controller is correct it should work.
+
+
+**Initializing the Upload Class**
+
+Like most other classes in CodeIgniter, the Upload class is initialized in your controller using the $this->load->library function:
+
+	$this->load->library('upload');
+
+Once the Upload class is loaded, the object will be available using: $this->upload
+
+**Setting Preferences**
+
+Similar to other libraries, you'll control what is allowed to be upload based on your preferences. In the controller you built above you set the following preferences:
+
+	$config['upload_path'] = './uploads/';
+	$config['allowed_types'] = 'gif|jpg|png';
+	$config['max_size']	= '100';
+	$config['max_width'] = '1024';
+	$config['max_height'] = '768';
+
+	$this->load->library('upload', $config);
+
+	// Alternately you can set preferences by calling the initialize function. Useful if you auto-load the class:
+	$this->upload->initialize($config);
+
+The above preferences should be fairly self-explanatory. Below is a table describing all available preferences.
+
+**Preferences**
+
+The following preferences are available. The default value indicates what will be used if you do not specify that preference.
+
+<table cellpadding="0" cellspacing="1" border="0" style="width:100%" class="tableborder">
+<tr>
+<th>Preference</th>
+<th>Default&nbsp;Value</th>
+<th>Options</th>
+<th>Description</th>
+</tr>
+
+<tr>
+<td class="td"><strong>upload_path</strong></td>
+<td class="td">None</td>
+<td class="td">None</td>
+<td class="td">The path to the folder where the upload should be placed.  The folder must be writable and the path can be absolute or relative.</td>
+</tr>
+
+<tr>
+<td class="td"><strong>allowed_types</strong></td>
+<td class="td">None</td>
+<td class="td">None</td>
+<td class="td">The mime types corresponding to the types of files you allow to be uploaded.  Usually the file extension can be used as the mime type.  Separate multiple types with a pipe.</td>
+</tr>
+
+
+<tr>
+<td class="td"><strong>file_name</strong></td>
+<td class="td">None</td>
+<td class="td">Desired file name</td>
+<td class="td">
+	<p>If set CodeIgniter will rename the uploaded file to this name.  The extension provided in the file name must also be an allowed file type.</p>
+</td>
+</tr>
+
+<tr>
+<td class="td"><strong>overwrite</strong></td>
+<td class="td">FALSE</td>
+<td class="td">TRUE/FALSE (boolean)</td>
+<td class="td">If set to true, if a file with the same name as the one you are uploading exists, it will be overwritten. If set to false, a number will be appended to the filename if another with the same name exists.</td>
+</tr>
+
+
+<tr>
+<td class="td"><strong>max_size</strong></td>
+<td class="td">0</td>
+<td class="td">None</td>
+<td class="td">The maximum size (in kilobytes) that the file can be.  Set to zero for no limit. Note:  Most PHP installations have their own limit, as specified in the php.ini file.  Usually 2 MB (or 2048 KB) by default.</td>
+</tr>
+
+<tr>
+<td class="td"><strong>max_width</strong></td>
+<td class="td">0</td>
+<td class="td">None</td>
+<td class="td">The maximum width (in pixels) that the file can be.  Set to zero for no limit.</td>
+</tr>
+
+<tr>
+<td class="td"><strong>max_height</strong></td>
+<td class="td">0</td>
+<td class="td">None</td>
+<td class="td">The maximum height (in pixels) that the file can be.  Set to zero for no limit.</td>
+</tr>
+
+<tr>
+<td class="td"><strong>max_filename</strong></td>
+<td class="td">0</td>
+<td class="td">None</td>
+<td class="td">The maximum length that a file name can be.  Set to zero for no limit.</td>
+</tr>
+
+<tr>
+<td class="td"><strong>encrypt_name</strong></td>
+<td class="td">FALSE</td>
+<td class="td">TRUE/FALSE (boolean)</td>
+<td class="td">If set to TRUE the file name will be converted to a random encrypted string. This can be useful if you would like the file saved with a name that can not be discerned by the person uploading it.</td>
+</tr>
+
+<tr>
+<td class="td"><strong>remove_spaces</strong></td>
+<td class="td">TRUE</td>
+<td class="td">TRUE/FALSE (boolean)</td>
+<td class="td">If set to TRUE, any spaces in the file name will be converted to underscores. This is recommended.</td>
+</tr>
+</table>
+
+**Setting preferences in a config file**
+
+If you prefer not to set preferences using the above method, you can instead put them into a config file. Simply create a new file called the upload.php, add the $config array in that file. Then save the file in: config/upload.php and it will be used automatically. You will NOT need to use the $this->upload->initialize function if you save your preferences in a config file.
+
+**Function Reference**
+
+The following functions are available
+
+**$this->upload->do_upload()**
+
+Performs the upload based on the preferences you've set. Note: By default the upload routine expects the file to come from a form field called userfile, and the form must be a "multipart type:
+
+	<form method="post" action="some_action" enctype="multipart/form-data" />
+
+If you would like to set your own field name simply pass its value to the do_upload function:
+
+	$field_name = "some_field_name";
+	$this->upload->do_upload($field_name)
+
+**$this->upload->display_errors()**
+
+Retrieves any error messages if the do_upload() function returned false. The function does not echo automatically, it returns the data so you can assign it however you need.
+
+*Formatting Errors*
+
+By default the above function wraps any errors within ```<p>``` tags. You can set your own delimiters like this:
+
+	$this->upload->display_errors('<p>', '</p>');
+
+**$this->upload->data()**
+
+This is a helper function that returns an array containing all of the data related to the file you uploaded. Here is the array prototype:
+
+	Array
+	(
+	    [file_name]    => mypic.jpg
+	    [file_type]    => image/jpeg
+	    [file_path]    => /path/to/your/upload/
+	    [full_path]    => /path/to/your/upload/jpg.jpg
+	    [raw_name]     => mypic
+	    [orig_name]    => mypic.jpg
+	    [client_name]  => mypic.jpg
+	    [file_ext]     => .jpg
+	    [file_size]    => 22.2
+	    [is_image]     => 1
+	    [image_width]  => 800
+	    [image_height] => 600
+	    [image_type]   => jpeg
+	    [image_size_str] => width="800" height="200"
+	)
+
+	
+**Explanation**
+
+Here is an explanation of the above array items.
+
+<table cellpadding="0" cellspacing="1" border="0" style="width:100%" class="tableborder">
+<tr><th>Item</th><th>Description</th></tr>
+
+<tr><td class="td"><strong>file_name</strong></td>
+<td class="td">The name of the file that was uploaded including the file extension.</td></tr>
+
+<tr><td class="td"><strong>file_type</strong></td>
+<td class="td">The file's Mime type</td></tr>
+
+<tr><td class="td"><strong>file_path</strong></td>
+<td class="td">The absolute server path to the file</td></tr>
+
+<tr><td class="td"><strong>full_path</strong></td>
+<td class="td">The absolute server path including the file name</td></tr>
+
+<tr><td class="td"><strong>raw_name</strong></td>
+<td class="td">The file name without the extension</td></tr>
+
+<tr><td class="td"><strong>orig_name</strong></td>
+<td class="td">The original file name.  This is only useful if you use the encrypted name option.</td></tr>
+
+<tr><td class="td"><strong>client_name</strong></td>
+<td class="td">The file name as supplied by the client user agent, prior to any file name preparation or incrementing.</td></tr>
+
+<tr><td class="td"><strong>file_ext</strong></td>
+<td class="td">The file extension with period</td></tr>
+
+<tr><td class="td"><strong>file_size</strong></td>
+<td class="td">The file size in kilobytes</td></tr>
+
+<tr><td class="td"><strong>is_image</strong></td>
+<td class="td">Whether the file is an image or not.  1 = image. 0 = not.</td></tr>
+
+<tr><td class="td"><strong>image_width</strong></td>
+<td class="td">Image width.</td></tr>
+
+<tr><td class="td"><strong>image_height</strong></td>
+<td class="td">Image height</td></tr>
+
+<tr><td class="td"><strong>image_type</strong></td>
+<td class="td">Image type.  Typically the file extension without the period.</td></tr>
+
+<tr><td class="td"><strong>image_size_str</strong></td>
+<td class="td">A string containing the width and height.  Useful to put into an image tag.</td></tr>
+
+
+</table>
+
+
+
+
 URI Class
 ---------
-Database Class
---------------
-Caching Class
--------------
+	
+The URI Class provides functions that help you retrieve information from your URI strings. If you use URI routing, you can also retrieve information about the re-routed segments.
+
+> Note: This class is initialized automatically by the system so there is no need to do it manually.
+$this->uri->segment(n)
+
+Permits you to retrieve a specific segment. Where n is the segment number you wish to retrieve. Segments are numbered from left to right. For example, if your full URL is this:
+
+	http://example.com/index.php/news/local/metro/crime_is_up
+
+The segment numbers would be this:
+
+1. news
+2. local
+3. metro
+4. crime_is_up
+
+By default the function returns FALSE (boolean) if the segment does not exist. There is an optional second parameter that permits you to set your own default value if the segment is missing. For example, this would tell the function to return the number zero in the event of failure:
+
+	$product_id = $this->uri->segment(3, 0);
+
+It helps avoid having to write code like this:
+
+	if ($this->uri->segment(3) === FALSE)
+	{
+	    $product_id = 0;
+	}
+	else
+	{
+	    $product_id = $this->uri->segment(3);
+	}
+
+**$this->uri->rsegment(n)**
+
+This function is identical to the previous one, except that it lets you retrieve a specific segment from your re-routed URI in the event you are using CodeIgniter's URI Routing feature.
+
+**$this->uri->slash_segment(n)**
+
+This function is almost identical to $this->uri->segment(), except it adds a trailing and/or leading slash based on the second parameter. If the parameter is not used, a trailing slash added. Examples:
+
+	$this->uri->slash_segment(3);
+	$this->uri->slash_segment(3, 'leading');
+	$this->uri->slash_segment(3, 'both');
+
+Returns:
+
+1. segment/
+2. /segment
+3. /segment/
+
+**$this->uri->slash_rsegment(n)**
+
+This function is identical to the previous one, except that it lets you add slashes a specific segment from your re-routed URI in the event you are using CodeIgniter's URI Routing feature.
+
+**$this->uri->uri_to_assoc(n)**
+
+This function lets you turn URI segments into and associative array of key/value pairs. Consider this URI:
+
+	index.php/user/search/name/joe/location/UK/gender/male
+
+Using this function you can turn the URI into an associative array with this prototype:
+
+	[array]
+	(
+	    'name' => 'joe'
+	    'location'	=> 'UK'
+	    'gender'	=> 'male'
+	)
+
+The first parameter of the function lets you set an offset. By default it is set to 3 since your URI will normally contain a controller/function in the first and second segments. Example:
+
+	$array = $this->uri->uri_to_assoc(3);
+
+	echo $array['name'];
+
+The second parameter lets you set default key names, so that the array returned by the function will always contain expected indexes, even if missing from the URI. Example:
+
+	$default = array('name', 'gender', 'location', 'type', 'sort');
+
+	$array = $this->uri->uri_to_assoc(3, $default);
+
+	
+If the URI does not contain a value in your default, an array index will be set to that name, with a value of FALSE.
+
+Lastly, if a corresponding value is not found for a given key (if there is an odd number of URI segments) the value will be set to FALSE (boolean).
+
+**$this->uri->ruri_to_assoc(n)**
+
+This function is identical to the previous one, except that it creates an associative array using the re-routed URI in the event you are using CodeIgniter's URI Routing feature.
+
+**$this->uri->assoc_to_uri()**
+
+Takes an associative array as input and generates a URI string from it. The array keys will be included in the string. Example:
+
+	$array = array('product' => 'shoes', 'size' => 'large', 'color' => 'red');
+
+	$str = $this->uri->assoc_to_uri($array);
+
+	// Produces: product/shoes/size/large/color/red
+
+**$this->uri->uri_string()**
+
+Returns a string with the complete URI. For example, if this is your full URL:
+
+	http://example.com/index.php/news/local/345
+
+The function would return this:
+
+	/news/local/345
+
+
+**$this->uri->ruri_string()**
+
+This function is identical to the previous one, except that it returns the re-routed URI in the event you are using CodeIgniter's URI Routing feature.
+
+**$this->uri->total_segments()**
+
+Returns the total number of segments.
+
+**$this->uri->total_rsegments()**
+
+This function is identical to the previous one, except that it returns the total number of segments in your re-routed URI in the event you are using CodeIgniter's URI Routing feature.
+
+**$this->uri->segment_array()**
+
+Returns an array containing the URI segments. For example:
+
+	$segs = $this->uri->segment_array();
+
+	foreach ($segs as $segment)
+	{
+	    echo $segment;
+	    echo '<br />';
+	}
+
+	
+**$this->uri->rsegment_array()**
+
+This function is identical to the previous one, except that it returns the array of segments in your re-routed URI in the event you are using CodeIgniter's URI Routing feature.
+	
+
+Database (Active Record) Class
+------------------------------
+
+CodeIgniter uses a modified version of the Active Record Database Pattern. This pattern allows information to be retrieved, inserted, and updated in your database with minimal scripting. In some cases only one or two lines of code are necessary to perform a database action. CodeIgniter does not require that each database table be its own class file. It instead provides a more simplified interface.
+
+Beyond simplicity, a major benefit to using the Active Record features is that it allows you to create database independent applications, since the query syntax is generated by each database adapter. It also allows for safer queries, since the values are escaped automatically by the system.
+
+Note: If you intend to write your own queries you can disable this class in your database config file, allowing the core database library and adapter to utilize fewer resources.
+
+***Selecting Data***
+
+The following functions allow you to build SQL SELECT statements.
+
+> Note: If you are using PHP 5 you can use method chaining for more compact syntax. This is described at the end of the page.
+
+**$this->db->get();**
+
+Runs the selection query and returns the result. Can be used by itself to retrieve all records from a table:
+
+	$query = $this->db->get('mytable');
+
+	// Produces: SELECT * FROM mytable
+
+	
+The second and third parameters enable you to set a limit and offset clause:
+
+	$query = $this->db->get('mytable', 10, 20);
+
+	// Produces: SELECT * FROM mytable LIMIT 20, 10 (in MySQL. Other databases have slightly different syntax)
+
+You'll notice that the above function is assigned to a variable named $query, which can be used to show the results:
+
+	$query = $this->db->get('mytable');
+
+	foreach ($query->result() as $row)
+	{
+	    echo $row->title;
+	}
+
+
+**$this->db->get_where();**
+
+Identical to the above function except that it permits you to add a "where" clause in the second parameter, instead of using the ```db->where()``` function:
+
+	$query = $this->db->get_where('mytable', array('id' => $id), $limit, $offset);
+
+> Note: get_where() was formerly known as getwhere(), which has been removed
+
+	
+**$this->db->select();**
+
+Permits you to write the SELECT portion of your query:
+
+	$this->db->select('title, content, date');
+
+	$query = $this->db->get('mytable');
+
+	// Produces: SELECT title, content, date FROM mytable
+
+> Note: If you are selecting all (*) from a table you do not need to use this function. When omitted, CodeIgniter assumes you wish to SELECT *
+
+```$this->db->select()``` accepts an optional second parameter. If you set it to FALSE, CodeIgniter will not try to protect your field or table names with backticks. This is useful if you need a compound select statement.
+
+	$this->db->select('(SELECT SUM(payments.amount) FROM payments WHERE payments.invoice_id=4') AS amount_paid', FALSE); 
+	$query = $this->db->get('mytable');
+
+**$this->db->select_max();**
+
+Writes a "SELECT MAX(field)" portion for your query. You can optionally include a second parameter to rename the resulting field.
+
+	$this->db->select_max('age');
+	$query = $this->db->get('members');
+	// Produces: SELECT MAX(age) as age FROM members
+
+	$this->db->select_max('age', 'member_age');
+	$query = $this->db->get('members');
+	// Produces: SELECT MAX(age) as member_age FROM members
+
+**$this->db->select_min();**
+
+Writes a "SELECT MIN(field)" portion for your query. As with select_max(), You can optionally include a second parameter to rename the resulting field.
+
+	$this->db->select_min('age');
+	$query = $this->db->get('members');
+	// Produces: SELECT MIN(age) as age FROM members
+
+**$this->db->select_avg();**
+
+Writes a "SELECT AVG(field)" portion for your query. As with select_max(), You can optionally include a second parameter to rename the resulting field.
+
+	$this->db->select_avg('age');
+	$query = $this->db->get('members');
+	// Produces: SELECT AVG(age) as age FROM members
+
+**$this->db->select_sum();**
+
+Writes a "SELECT SUM(field)" portion for your query. As with select_max(), You can optionally include a second parameter to rename the resulting field.
+
+	$this->db->select_sum('age');
+	$query = $this->db->get('members');
+	// Produces: SELECT SUM(age) as age FROM members
+
+**$this->db->from();**
+
+Permits you to write the FROM portion of your query:
+
+	$this->db->select('title, content, date');
+	$this->db->from('mytable');
+
+	$query = $this->db->get();
+
+	// Produces: SELECT title, content, date FROM mytable
+
+> Note: As shown earlier, the FROM portion of your query can be specified in the $this->db->get() function, so use whichever method you prefer.
+
+**$this->db->join();**
+
+Permits you to write the JOIN portion of your query:
+
+	$this->db->select('*');
+	$this->db->from('blogs');
+	$this->db->join('comments', 'comments.id = blogs.id');
+
+	$query = $this->db->get();
+
+	// Produces: 
+	// SELECT * FROM blogs
+	// JOIN comments ON comments.id = blogs.id
+
+Multiple function calls can be made if you need several joins in one query.
+
+If you need a specific type of JOIN you can specify it via the third parameter of the function. Options are: left, right, outer, inner, left outer, and right outer.
+
+	$this->db->join('comments', 'comments.id = blogs.id', 'left');
+
+	// Produces: LEFT JOIN comments ON comments.id = blogs.id
+
+	
+**$this->db->where();**
+
+This function enables you to set WHERE clauses using one of four methods:
+
+> Note: All values passed to this function are escaped automatically, producing safer queries.
+
+	
+1.Simple key/value method:   
+
+	$this->db->where('name', $name); 
+
+	// Produces: WHERE name = 'Joe'
+
+Notice that the equal sign is added for you.
+
+If you use multiple function calls they will be chained together with AND between them:
+
+	$this->db->where('name', $name);
+	$this->db->where('title', $title);
+	$this->db->where('status', $status); 
+
+	// WHERE name = 'Joe' AND title = 'boss' AND status = 'active'
+
+2.Custom key/value method:
+
+You can include an operator in the first parameter in order to control the comparison:
+
+	$this->db->where('name !=', $name);
+	$this->db->where('id <', $id); 
+
+	// Produces: WHERE name != 'Joe' AND id < 45
+
+3.Associative array method:
+
+	$array = array('name' => $name, 'title' => $title, 'status' => $status);
+
+	$this->db->where($array); 
+
+	// Produces: WHERE name = 'Joe' AND title = 'boss' AND status = 'active'
+
+You can include your own operators using this method as well:
+
+	$array = array('name !=' => $name, 'id <' => $id, 'date >' => $date);
+
+	$this->db->where($array);
+
+4.Custom string:
+You can write your own clauses manually:
+
+	$where = "name='Joe' AND status='boss' OR status='active'";
+
+	$this->db->where($where);
+	
+$this->db->where() accepts an optional third parameter. If you set it to FALSE, CodeIgniter will not try to protect your field or table names with backticks.
+
+	$this->db->where('MATCH (field) AGAINST ("value")', NULL, FALSE);
+
+**$this->db->or_where();**
+
+This function is identical to the one above, except that multiple instances are joined by OR:
+
+	$this->db->where('name !=', $name);
+	$this->db->or_where('id >', $id); 
+
+	// Produces: WHERE name != 'Joe' OR id > 50
+
+> Note: or_where() was formerly known as orwhere(), which has been removed.
+
+
+**$this->db->where_in();**
+
+Generates a WHERE field IN ('item', 'item') SQL query joined with AND if appropriate
+
+	$names = array('Frank', 'Todd', 'James');
+	$this->db->where_in('username', $names);
+	// Produces: WHERE username IN ('Frank', 'Todd', 'James')
+
+**$this->db->or_where_in();**
+
+Generates a WHERE field IN ('item', 'item') SQL query joined with OR if appropriate
+
+	$names = array('Frank', 'Todd', 'James');
+	$this->db->or_where_in('username', $names);
+	// Produces: OR username IN ('Frank', 'Todd', 'James')
+
+**$this->db->where_not_in();**
+
+Generates a WHERE field NOT IN ('item', 'item') SQL query joined with AND if appropriate
+
+	$names = array('Frank', 'Todd', 'James');
+	$this->db->where_not_in('username', $names);
+	// Produces: WHERE username NOT IN ('Frank', 'Todd', 'James')
+
+**$this->db->or_where_not_in();**
+
+Generates a WHERE field NOT IN ('item', 'item') SQL query joined with OR if appropriate
+
+	$names = array('Frank', 'Todd', 'James');
+	$this->db->or_where_not_in('username', $names);
+	// Produces: OR username NOT IN ('Frank', 'Todd', 'James')
+
+**$this->db->like();**
+
+This function enables you to generate LIKE clauses, useful for doing searches.
+
+> Note: All values passed to this function are escaped automatically.
+
+1.Simple key/value method:
+
+	$this->db->like('title', 'match'); 
+
+	// Produces: WHERE title LIKE '%match%'
+
+If you use multiple function calls they will be chained together with AND between them:
+
+	$this->db->like('title', 'match');
+	$this->db->like('body', 'match'); 
+
+	// WHERE title LIKE '%match%' AND body LIKE '%match%
+
+If you want to control where the wildcard (%) is placed, you can use an optional third argument. Your options are 'before', 'after' and 'both' (which is the default).
+
+	$this->db->like('title', 'match', 'before'); 
+	// Produces: WHERE title LIKE '%match'	
+
+	$this->db->like('title', 'match', 'after'); 
+	// Produces: WHERE title LIKE 'match%' 
+
+	$this->db->like('title', 'match', 'both'); 
+	// Produces: WHERE title LIKE '%match%'
+
+If you do not want to use the wildcard (%) you can pass to the optional third argument the option 'none'.
+	
+	$this->db->like('title', 'match', 'none'); 
+	// Produces: WHERE title LIKE 'match'
+
+2.Associative array method:
+	
+	$array = array('title' => $match, 'page1' => $match, 'page2' => $match);
+
+	$this->db->like($array); 
+
+	// WHERE title LIKE '%match%' AND page1 LIKE '%match%' AND page2 LIKE '%match%'
+
+**$this->db->or_like();**
+
+This function is identical to the one above, except that multiple instances are joined by OR:
+
+	$this->db->like('title', 'match');
+	$this->db->or_like('body', $match); 
+
+	// WHERE title LIKE '%match%' OR body LIKE '%match%'
+
+	
+> Note: or_like() was formerly known as orlike(), which has been removed.
+
+	
+**$this->db->not_like();**
+
+This function is identical to like(), except that it generates NOT LIKE statements:
+
+	$this->db->not_like('title', 'match');
+
+	// WHERE title NOT LIKE '%match%
+
+	
+**$this->db->or_not_like();**
+
+This function is identical to not_like(), except that multiple instances are joined by OR:
+
+	$this->db->like('title', 'match');
+	$this->db->or_not_like('body', 'match'); 
+
+	// WHERE title LIKE '%match% OR body NOT LIKE '%match%'
+
+	
+**$this->db->group_by();**
+
+Permits you to write the GROUP BY portion of your query:
+
+	$this->db->group_by("title"); 
+
+	// Produces: GROUP BY title
+
+	
+You can also pass an array of multiple values as well:
+
+	$this->db->group_by(array("title", "date")); 
+
+	// Produces: GROUP BY title, date
+> Note: group_by() was formerly known as groupby(), which has been removed.
+
+	
+**$this->db->distinct();**
+
+	
+Adds the "DISTINCT" keyword to a query
+
+	$this->db->distinct();
+	$this->db->get('table');
+
+	// Produces: SELECT DISTINCT * FROM table
+
+**$this->db->having();**
+
+Permits you to write the HAVING portion of your query. There are 2 possible syntaxes, 1 argument or 2:
+
+	$this->db->having('user_id = 45'); 
+	// Produces: HAVING user_id = 45
+
+	$this->db->having('user_id', 45); 
+	// Produces: HAVING user_id = 45
+
+You can also pass an array of multiple values as well:
+
+	$this->db->having(array('title =' => 'My Title', 'id <' => $id)); 
+
+	// Produces: HAVING title = 'My Title', id < 45
+
+If you are using a database that CodeIgniter escapes queries for, you can prevent escaping content by passing an optional third argument, and setting it to FALSE.
+
+	$this->db->having('user_id', 45); 
+	// Produces: HAVING `user_id` = 45 in some databases such as MySQL 
+	$this->db->having('user_id', 45, FALSE); 
+	// Produces: HAVING user_id = 45
+
+**$this->db->or_having();**
+
+Identical to having(), only separates multiple clauses with "OR".
+
+**$this->db->order_by();**
+
+Lets you set an ORDER BY clause. The first parameter contains the name of the column you would like to order by. The second parameter lets you set the direction of the result. Options are asc or desc, or random.
+
+	$this->db->order_by("title", "desc"); 
+
+	// Produces: ORDER BY title DESC
+
+	
+You can also pass your own string in the first parameter:
+
+	$this->db->order_by('title desc, name asc'); 
+
+	// Produces: ORDER BY title DESC, name ASC
+
+	
+Or multiple function calls can be made if you need multiple fields.
+
+	$this->db->order_by("title", "desc");
+	$this->db->order_by("name", "asc"); 
+
+	// Produces: ORDER BY title DESC, name ASC
+
+> Note: order_by() was formerly known as orderby(), which has been removed.
+> Note: random ordering is not currently supported in Oracle or MSSQL drivers. These will default to 'ASC'.
+
+	
+**$this->db->limit();**
+
+Lets you limit the number of rows you would like returned by the query:
+
+	$this->db->limit(10);
+
+	// Produces: LIMIT 10
+
+	
+The second parameter lets you set a result offset.
+
+	$this->db->limit(10, 20);
+
+	// Produces: LIMIT 20, 10 (in MySQL. Other databases have slightly different syntax)
+
+	
+**$this->db->count_all_results();**
+
+Permits you to determine the number of rows in a particular Active Record query. Queries will accept Active Record restrictors such as where(), or_where(), like(), or_like(), etc. Example:
+
+	echo $this->db->count_all_results('my_table');
+	// Produces an integer, like 25
+
+	$this->db->like('title', 'match');
+	$this->db->from('my_table');
+	echo $this->db->count_all_results();
+	// Produces an integer, like 17
+
+	
+**$this->db->count_all();**
+
+Permits you to determine the number of rows in a particular table. Submit the table name in the first parameter. Example:
+
+	echo $this->db->count_all('my_table');
+
+	// Produces an integer, like 25
+ 
+**INSERTING DATA**
+
+**$this->db->insert();**
+
+Generates an insert string based on the data you supply, and runs the query. You can either pass an array or an object to the function. Here is an example using an array:
+
+	$data = array(
+	   'title' => 'My title' ,
+	   'name' => 'My Name' ,
+	   'date' => 'My date'
+	);
+
+	$this->db->insert('mytable', $data); 
+
+	// Produces: INSERT INTO mytable (title, name, date) VALUES ('My title', 'My name', 'My date')
+
+The first parameter will contain the table name, the second is an associative array of values.
+
+Here is an example using an object:
+
+	/*
+	    class Myclass {
+	        var $title = 'My Title';
+	        var $content = 'My Content';
+	        var $date = 'My Date';
+	    }
+	*/
+
+	$object = new Myclass;
+
+	$this->db->insert('mytable', $object); 
+
+	// Produces: INSERT INTO mytable (title, content, date) VALUES ('My Title', 'My Content', 'My Date')
+
+	
+The first parameter will contain the table name, the second is an object.
+
+> Note: All values are escaped automatically producing safer queries.
+
+**$this->db->insert_batch();**
+
+Generates an insert string based on the data you supply, and runs the query. You can either pass an array or an object to the function. Here is an example using an array:
+
+	$data = array(
+	   array(
+	      'title' => 'My title' ,
+	      'name' => 'My Name' ,
+	      'date' => 'My date'
+	   ),
+	   array(
+	      'title' => 'Another title' ,
+	      'name' => 'Another Name' ,
+	      'date' => 'Another date'
+	   )
+	);
+
+	$this->db->insert_batch('mytable', $data); 
+
+	// Produces: INSERT INTO mytable (title, name, date) VALUES ('My title', 'My name', 'My date'), ('Another title', 'Another name', 'Another date')
+
+	
+The first parameter will contain the table name, the second is an associative array of values.
+
+> Note: All values are escaped automatically producing safer queries.
+
+**$this->db->set();**
+
+This function enables you to set values for inserts or updates.
+
+It can be used instead of passing a data array directly to the insert or update functions:
+
+	$this->db->set('name', $name); 
+	$this->db->insert('mytable'); 
+
+	// Produces: INSERT INTO mytable (name) VALUES ('{$name}')
+
+If you use multiple function called they will be assembled properly based on whether you are doing an insert or an update:
+
+	$this->db->set('name', $name);
+	$this->db->set('title', $title);
+	$this->db->set('status', $status);
+	$this->db->insert('mytable');
+
+```set()``` will also accept an optional third parameter ($escape), that will prevent data from being escaped if set to FALSE. To illustrate the difference, here is set() used both with and without the escape parameter.
+
+	$this->db->set('field', 'field+1', FALSE);
+	$this->db->insert('mytable'); 
+	// gives INSERT INTO mytable (field) VALUES (field+1)
+
+	$this->db->set('field', 'field+1');
+	$this->db->insert('mytable'); 
+	// gives INSERT INTO mytable (field) VALUES ('field+1')
+
+You can also pass an associative array to this function:
+
+	$array = array('name' => $name, 'title' => $title, 'status' => $status);
+
+	$this->db->set($array);
+	$this->db->insert('mytable');
+
+Or an object:
+
+	/*
+	    class Myclass {
+	        var $title = 'My Title';
+	        var $content = 'My Content';
+	        var $date = 'My Date';
+	    }
+	*/
+
+	$object = new Myclass;
+
+	$this->db->set($object);
+	$this->db->insert('mytable');
+ 
+**UPDATING DATA**
+
+**$this->db->update();**
+
+Generates an update string and runs the query based on the data you supply. You can pass an array or an object to the function. Here is an example using an array:
+
+	$data = array(
+	               'title' => $title,
+	               'name' => $name,
+	               'date' => $date
+	            );
+
+	$this->db->where('id', $id);
+	$this->db->update('mytable', $data); 
+
+	// Produces:
+	// UPDATE mytable 
+	// SET title = '{$title}', name = '{$name}', date = '{$date}'
+	// WHERE id = $id
+
+	
+Or you can supply an object:
+
+	/*
+	    class Myclass {
+	        var $title = 'My Title';
+	        var $content = 'My Content';
+	        var $date = 'My Date';
+	    }
+	*/
+
+	$object = new Myclass;
+
+	$this->db->where('id', $id);
+	$this->db->update('mytable', $object); 
+
+	// Produces:
+	// UPDATE mytable 
+	// SET title = '{$title}', name = '{$name}', date = '{$date}'
+	// WHERE id = $id
+
+	
+> Note: All values are escaped automatically producing safer queries.
+You'll notice the use of the $this->db->where() function, enabling you to set the WHERE clause. You can optionally pass this information directly into the update function as a string:
+
+	$this->db->update('mytable', $data, "id = 4");
+
+Or as an array:
+
+	$this->db->update('mytable', $data, array('id' => $id));
+		
+You may also use the $this->db->set() function described above when performing updates.
+
+	$this->db->update_batch();
+
+Generates an update string based on the data you supply, and runs the query. You can either pass an array or an object to the function. Here is an example using an array:
+
+	$data = array(
+	   array(
+	      'title' => 'My title' ,
+	      'name' => 'My Name 2' ,
+	      'date' => 'My date 2'
+	   ),
+	   array(
+	      'title' => 'Another title' ,
+	      'name' => 'Another Name 2' ,
+	      'date' => 'Another date 2'
+	   )
+	);
+
+	$this->db->update_batch('mytable', $data, 'title'); 
+
+	// Produces: 
+	// UPDATE `mytable` SET `name` = CASE
+	// WHEN `title` = 'My title' THEN 'My Name 2'
+	// WHEN `title` = 'Another title' THEN 'Another Name 2'
+	// ELSE `name` END,
+	// `date` = CASE 
+	// WHEN `title` = 'My title' THEN 'My date 2'
+	// WHEN `title` = 'Another title' THEN 'Another date 2'
+	// ELSE `date` END
+	// WHERE `title` IN ('My title','Another title')
+
+	
+The first parameter will contain the table name, the second is an associative array of values, the third parameter is the where key.
+
+> Note: All values are escaped automatically producing safer queries.
+ 
+**DELETING DATA**
+
+**$this->db->delete();**
+
+Generates a delete SQL string and runs the query.
+
+	$this->db->delete('mytable', array('id' => $id)); 
+
+	// Produces:
+	// DELETE FROM mytable 
+	// WHERE id = $id
+
+The first parameter is the table name, the second is the where clause. You can also use the where() or or_where() functions instead of passing the data to the second parameter of the function:
+
+	$this->db->where('id', $id);
+	$this->db->delete('mytable'); 
+
+	// Produces:
+	// DELETE FROM mytable 
+	// WHERE id = $id
+
+An array of table names can be passed into delete() if you would like to delete data from more than 1 table.
+
+	$tables = array('table1', 'table2', 'table3');
+	$this->db->where('id', '5');
+	$this->db->delete($tables);
+
+If you want to delete all data from a table, you can use the truncate() function, or empty_table().
+
+	$this->db->empty_table();
+
+Generates a delete SQL string and runs the query.
+	
+	$this->db->empty_table('mytable'); 
+
+	// Produces
+	// DELETE FROM mytable
+
+	$this->db->truncate();
+
+Generates a truncate SQL string and runs the query.
+
+	$this->db->from('mytable'); 
+	$this->db->truncate(); 
+	// or 
+	$this->db->truncate('mytable'); 
+
+	// Produce:
+	// TRUNCATE mytable 
+
+> Note: If the TRUNCATE command isn't available, truncate() will execute as "DELETE FROM table".
+
+	
+**METHOD CHAINING**
+
+Method chaining allows you to simplify your syntax by connecting multiple functions. Consider this example:
+
+	$this->db->select('title')->from('mytable')->where('id', $id)->limit(10, 20);
+
+	$query = $this->db->get();
+
+> Note: Method chaining only works with PHP 5.
+ 
+
+**ACTIVE RECORD CACHING**
+
+While not "true" caching, Active Record enables you to save (or "cache") certain parts of your queries for reuse at a later point in your script's execution. Normally, when an Active Record call is completed, all stored information is reset for the next call. With caching, you can prevent this reset, and reuse information easily.
+
+Cached calls are cumulative. If you make 2 cached select() calls, and then 2 uncached select() calls, this will result in 4 select() calls. There are three Caching functions available:
+
+	$this->db->start_cache()
+
+This function must be called to begin caching. All Active Record queries of the correct type (see below for supported queries) are stored for later use.
+
+	$this->db->stop_cache()
+
+This function can be called to stop caching.
+
+	$this->db->flush_cache()
+
+This function deletes all items from the Active Record cache.
+
+Here's a usage example:
+
+	$this->db->start_cache();
+	$this->db->select('field1');
+	$this->db->stop_cache();
+
+	$this->db->get('tablename');
+
+	//Generates: SELECT `field1` FROM (`tablename`)
+
+	$this->db->select('field2');
+	$this->db->get('tablename');
+
+	//Generates: SELECT `field1`, `field2` FROM (`tablename`)
+
+	$this->db->flush_cache();
+
+	$this->db->select('field2');
+	$this->db->get('tablename');
+
+	//Generates: SELECT `field2` FROM (`tablename`)
+
+> Note: The following statements can be cached: select, from, join, where, like, group_by, having, order_by, set
+ 
+
 Download Helper
 ---------------
+
+	
+The Download Helper lets you download data to your desktop.
+
+**Loading this Helper**
+
+This helper is loaded using the following code:
+
+	$this->load->helper('download');
+
+The following functions are available:
+
+	force_download('filename', 'data')
+
+Generates server headers which force data to be downloaded to your desktop. Useful with file downloads. The first parameter is the name you want the downloaded file to be named, the second parameter is the file data. Example:
+
+	$data = 'Here is some text!';
+	$name = 'mytext.txt';
+
+	force_download($name, $data);
+
+If you want to download an existing file from your server you'll need to read the file into a string:
+
+	$data = file_get_contents("/path/to/photo.jpg"); // Read the file's contents
+	$name = 'myphoto.jpg';
+
+	force_download($name, $data);
+
+	
 Email Helper
 ------------
+		
+The Email Helper provides some assistive functions for working with Email. For a more robust email solution, see CodeIgniter's Email Class.
+
+**Loading this Helper**
+
+This helper is loaded using the following code:
+
+	$this->load->helper('email');
+
+The following functions are available:
+
+**valid_email('email')**
+
+Checks if an email is a correctly formatted email. Note that is doesn't actually prove the email will recieve mail, simply that it is a validly formed address.
+
+	It returns TRUE/FALSE
+
+	$this->load->helper('email');
+
+	if (valid_email('email@somesite.com'))
+	{
+	    echo 'email is valid';
+	}
+	else
+	{
+	    echo 'email is not valid';
+	}
+
+	
+**send_email('recipient', 'subject', 'message')**
+
+Sends an email using PHP's native mail() function. For a more robust email solution, see CodeIgniter's Email Class.
+
+
 Form Helper
 -----------
+	
+The Form Helper file contains functions that assist in working with forms.
+
+**Loading this Helper**
+
+This helper is loaded using the following code:
+
+	$this->load->helper('form');
+
+The following functions are available:
+
+**form_open()**
+
+Creates an opening form tag with a base URL built from your config preferences. It will optionally let you add form attributes and hidden input fields, and will always add the attribute accept-charset based on the charset value in your config file.
+
+The main benefit of using this tag rather than hard coding your own HTML is that it permits your site to be more portable in the event your URLs ever change.
+
+Here's a simple example:
+
+	echo form_open('email/send');
+
+The above example would create a form that points to your base URL plus the "email/send" URI segments, like this:
+
+	<form method="post" accept-charset="utf-8" action="http:/example.com/index.php/email/send" />
+
+**Adding Attributes**
+
+Attributes can be added by passing an associative array to the second parameter, like this:
+
+	$attributes = array('class' => 'email', 'id' => 'myform');
+
+	echo form_open('email/send', $attributes);
+
+The above example would create a form similar to this:
+
+	<form method="post" accept-charset="utf-8" action="http:/example.com/index.php/email/send"  class="email"  id="myform" />
+
+**Adding Hidden Input Fields**
+
+Hidden fields can be added by passing an associative array to the third parameter, like this:
+
+	$hidden = array('username' => 'Joe', 'member_id' => '234');
+
+	echo form_open('email/send', '', $hidden);
+
+	
+The above example would create a form similar to this:
+
+	<form method="post" accept-charset="utf-8" action="http:/example.com/index.php/email/send">
+	<input type="hidden" name="username" value="Joe" />
+	<input type="hidden" name="member_id" value="234" />
+
+**form_open_multipart()**
+
+This function is absolutely identical to the form_open() tag above except that it adds a multipart attribute, which is necessary if you would like to use the form to upload files with.
+
+**form_hidden()**
+
+Lets you generate hidden input fields. You can either submit a name/value string to create one field:
+
+	form_hidden('username', 'johndoe');
+
+	// Would produce:
+
+	<input type="hidden" name="username" value="johndoe" />
+
+Or you can submit an associative array to create multiple fields:
+
+	$data = array(
+	              'name'  => 'John Doe',
+	              'email' => 'john@example.com',
+	              'url'   => 'http://example.com'
+	            );
+
+	echo form_hidden($data);
+
+	// Would produce:
+
+	<input type="hidden" name="name" value="John Doe" />
+	<input type="hidden" name="email" value="john@example.com" />
+	<input type="hidden" name="url" value="http://example.com" />
+
+**form_input()**
+
+Lets you generate a standard text input field. You can minimally pass the field name and value in the first and second parameter:
+
+	echo form_input('username', 'johndoe');
+
+	
+Or you can pass an associative array containing any data you wish your form to contain:
+
+	$data = array(
+	              'name'        => 'username',
+	              'id'          => 'username',
+	              'value'       => 'johndoe',
+	              'maxlength'   => '100',
+	              'size'        => '50',
+	              'style'       => 'width:50%',
+	            );
+
+	echo form_input($data);
+
+	// Would produce:
+
+	<input type="text" name="username" id="username" value="johndoe" maxlength="100" size="50" style="width:50%" />
+
+	
+If you would like your form to contain some additional data, like Javascript, you can pass it as a string in the third parameter:
+
+	$js = 'onClick="some_function()"';
+
+	echo form_input('username', 'johndoe', $js);
+	form_password()
+
+This function is identical in all respects to the form_input() function above except that is sets it as a "password" type.
+
+**form_upload()**
+
+This function is identical in all respects to the form_input() function above except that is sets it as a "file" type, allowing it to be used to upload files.
+
+**form_textarea()**
+
+This function is identical in all respects to the form_input() function above except that it generates a "textarea" type. Note: Instead of the "maxlength" and "size" attributes in the above example, you will instead specify "rows" and "cols".
+
+**form_dropdown()**
+
+Lets you create a standard drop-down field. The first parameter will contain the name of the field, the second parameter will contain an associative array of options, and the third parameter will contain the value you wish to be selected. You can also pass an array of multiple items through the third parameter, and CodeIgniter will create a multiple select for you. Example:
+
+	$options = array(
+	                  'small'  => 'Small Shirt',
+	                  'med'    => 'Medium Shirt',
+	                  'large'   => 'Large Shirt',
+	                  'xlarge' => 'Extra Large Shirt',
+	                );
+
+	$shirts_on_sale = array('small', 'large');
+
+	echo form_dropdown('shirts', $options, 'large');
+
+	// Would produce:
+
+	<select name="shirts">
+	<option value="small">Small Shirt</option>
+	<option value="med">Medium Shirt</option>
+	<option value="large" selected="selected">Large Shirt</option>
+	<option value="xlarge">Extra Large Shirt</option>
+	</select>
+
+	echo form_dropdown('shirts', $options, $shirts_on_sale);
+
+	// Would produce:
+
+	<select name="shirts" multiple="multiple">
+	<option value="small" selected="selected">Small Shirt</option>
+	<option value="med">Medium Shirt</option>
+	<option value="large" selected="selected">Large Shirt</option>
+	<option value="xlarge">Extra Large Shirt</option>
+	</select>
+
+If you would like the opening ```<select>``` to contain additional data, like an id attribute or JavaScript, you can pass it as a string in the fourth parameter:
+
+	$js = 'id="shirts" onChange="some_function();"';
+
+	echo form_dropdown('shirts', $options, 'large', $js);
+
+If the array passed as $options is a multidimensional array, form_dropdown() will produce an ```<optgroup>``` with the array key as the label.
+
+**form_multiselect()**
+
+Lets you create a standard multiselect field. The first parameter will contain the name of the field, the second parameter will contain an associative array of options, and the third parameter will contain the value or values you wish to be selected. The parameter usage is identical to using form_dropdown() above, except of course that the name of the field will need to use POST array syntax, e.g. foo[].
+
+**form_fieldset()**
+
+Lets you generate fieldset/legend fields.
+
+	echo form_fieldset('Address Information');
+	echo "<p>fieldset content here</p>\n";
+	echo form_fieldset_close(); 
+
+	// Produces
+	<fieldset> 
+	<legend>Address Information</legend> 
+	<p>form content here</p> 
+	</fieldset>
+	
+Similar to other functions, you can submit an associative array in the second parameter if you prefer to set additional attributes.
+
+	$attributes = array('id' => 'address_info', 'class' => 'address_info');
+	echo form_fieldset('Address Information', $attributes);
+	echo "<p>fieldset content here</p>\n";
+	echo form_fieldset_close(); 
+
+	// Produces
+	<fieldset id="address_info" class="address_info"> 
+	<legend>Address Information</legend> 
+	<p>form content here</p> 
+	</fieldset>
+
+	form_fieldset_close()
+
+Produces a closing ```</fieldset>``` tag. The only advantage to using this function is it permits you to pass data to it which will be added below the tag. For example:
+
+	$string = "</div></div>";
+
+	echo form_fieldset_close($string);
+
+	// Would produce:
+	</fieldset>
+	</div></div>
+	form_checkbox()
+
+Lets you generate a checkbox field. Simple example:
+
+	echo form_checkbox('newsletter', 'accept', TRUE);
+
+	// Would produce:
+
+	<input type="checkbox" name="newsletter" value="accept" checked="checked" />
+
+The third parameter contains a boolean TRUE/FALSE to determine whether the box should be checked or not.
+
+Similar to the other form functions in this helper, you can also pass an array of attributes to the function:
+
+	$data = array(
+	    'name'        => 'newsletter',
+	    'id'          => 'newsletter',
+	    'value'       => 'accept',
+	    'checked'     => TRUE,
+	    'style'       => 'margin:10px',
+	    );
+
+	echo form_checkbox($data);
+
+	// Would produce:
+
+	<input type="checkbox" name="newsletter" id="newsletter" value="accept" checked="checked" style="margin:10px" />
+
+As with other functions, if you would like the tag to contain additional data, like JavaScript, you can pass it as a string in the fourth parameter:
+
+	$js = 'onClick="some_function()"';
+
+	echo form_checkbox('newsletter', 'accept', TRUE, $js)
+
+**form_radio()**
+
+This function is identical in all respects to the form_checkbox() function above except that is sets it as a "radio" type.
+
+**form_submit()**
+
+Lets you generate a standard submit button. Simple example:
+
+	echo form_submit('mysubmit', 'Submit Post!');
+
+	// Would produce:
+
+	<input type="submit" name="mysubmit" value="Submit Post!" />
+
+Similar to other functions, you can submit an associative array in the first parameter if you prefer to set your own attributes. The third parameter lets you add extra data to your form, like JavaScript.
+
+**form_label()**
+
+Lets you generate a ```<label>```. Simple example:
+
+	echo form_label('What is your Name', 'username');
+
+	// Would produce: 
+	<label for="username">What is your Name</label>
+
+Similar to other functions, you can submit an associative array in the third parameter if you prefer to set additional attributes.
+
+	$attributes = array(
+	    'class' => 'mycustomclass',
+	    'style' => 'color: #000;',
+	);
+	echo form_label('What is your Name', 'username', $attributes);
+
+	// Would produce: 
+	<label for="username" class="mycustomclass" style="color: #000;">What is your Name</label>
+
+**form_reset()**
+
+Lets you generate a standard reset button. Use is identical to form_submit().
+
+**form_button()**
+
+Lets you generate a standard button element. You can minimally pass the button name and content in the first and second parameter:
+
+	echo form_button('name','content');
+
+	// Would produce
+	<button name="name" type="button">Content</button>
+
+Or you can pass an associative array containing any data you wish your form to contain:
+
+	$data = array(
+	    'name' => 'button',
+	    'id' => 'button',
+	    'value' => 'true',
+	    'type' => 'reset',
+	    'content' => 'Reset'
+	);
+
+	echo form_button($data);
+
+	// Would produce:
+	<button name="button" id="button" value="true" type="reset">Reset</button>
+
+If you would like your form to contain some additional data, like JavaScript, you can pass it as a string in the third parameter:
+
+	$js = 'onClick="some_function()"';
+
+	echo form_button('mybutton', 'Click Me', $js);
+
+**form_close()**
+
+Produces a closing ```</form>``` tag. The only advantage to using this function is it permits you to pass data to it which will be added below the tag. For example:
+
+	$string = "</div></div>";
+
+	echo form_close($string);
+
+	// Would produce:
+
+	</form>
+	</div></div>
+
+**form_prep()**
+
+Allows you to safely use HTML and characters such as quotes within form elements without breaking out of the form. Consider this example:
+
+	$string = 'Here is a string containing "quoted" text.';
+
+	<input type="text" name="myform" value="$string" />
+
+Since the above string contains a set of quotes it will cause the form to break. The form_prep function converts HTML so that it can be used safely:
+
+	<input type="text" name="myform" value="<?php echo form_prep($string); ?>" />
+
+> Note: If you use any of the form helper functions listed in this page the form values will be prepped automatically, so there is no need to call this function. Use it only if you are creating your own form elements.
+
+**set_value()**
+
+Permits you to set the value of an input form or textarea. You must supply the field name via the first parameter of the function. The second (optional) parameter allows you to set a default value for the form. Example:
+
+	<input type="text" name="quantity" value="<?php echo set_value('quantity', '0'); ?>" size="50" />
+
+The above form will show "0" when loaded for the first time.
+
+**set_select()**
+
+If you use a ```<select>``` menu, this function permits you to display the menu item that was selected. The first parameter must contain the name of the select menu, the second parameter must contain the value of each item, and the third (optional) parameter lets you set an item as the default (use boolean TRUE/FALSE).
+
+Example:
+
+	<select name="myselect">
+	<option value="one" <?php echo set_select('myselect', 'one', TRUE); ?> >One</option>
+	<option value="two" <?php echo set_select('myselect', 'two'); ?> >Two</option>
+	<option value="three" <?php echo set_select('myselect', 'three'); ?> >Three</option>
+	</select>
+
+**set_checkbox()**
+
+Permits you to display a checkbox in the state it was submitted. The first parameter must contain the name of the checkbox, the second parameter must contain its value, and the third (optional) parameter lets you set an item as the default (use boolean TRUE/FALSE). Example:
+
+	<input type="checkbox" name="mycheck" value="1" <?php echo set_checkbox('mycheck', '1'); ?> />
+	<input type="checkbox" name="mycheck" value="2" <?php echo set_checkbox('mycheck', '2'); ?> />
+	
+**set_radio()**
+
+Permits you to display radio buttons in the state they were submitted. This function is identical to the set_checkbox() function above.
+
+	<input type="radio" name="myradio" value="1" <?php echo set_radio('myradio', '1', TRUE); ?> />
+	<input type="radio" name="myradio" value="2" <?php echo set_radio('myradio', '2'); ?> />
+		
+
 URL Helper
 ----------
 
+The URL Helper file contains functions that assist in working with URLs.
 
+*Loading this Helper*
+
+This helper is loaded using the following code:
+
+	$this->load->helper('url');
+
+The following functions are available:
+
+**site_url()**
+
+Returns your site URL, as specified in your config file. The index.php file (or whatever you have set as your site index_page in your config file) will be added to the URL, as will any URI segments you pass to the function, and the url_suffix as set in your config file.
+
+You are encouraged to use this function any time you need to generate a local URL so that your pages become more portable in the event your URL changes.
+
+Segments can be optionally passed to the function as a string or an array. Here is a string example:
+
+	echo site_url("news/local/123");
+
+The above example would return something like: ```http://example.com/index.php/news/local/123```
+
+Here is an example of segments passed as an array:
+
+	$segments = array('news', 'local', '123');
+
+	echo site_url($segments);
+
+**base_url()**
+
+Returns your site base URL, as specified in your config file. Example:
+
+	echo base_url();
+
+This function returns the same thing as site_url, without the index_page or url_suffix being appended.
+
+Also like site_url, you can supply segments as a string or an array. Here is a string example:
+
+	echo base_url("blog/post/123");
+
+The above example would return something like: http://example.com/blog/post/123
+
+This is useful because unlike site_url(), you can supply a string to a file, such as an image or stylesheet. For example:
+
+	echo base_url("images/icons/edit.png");
+
+This would give you something like: ```http://example.com/images/icons/edit.png```
+
+**current_url()**
+
+Returns the full URL (including segments) of the page being currently viewed.
+
+**uri_string()**
+
+Returns the URI segments of any page that contains this function. For example, if your URL was this:
+
+	http://some-site.com/blog/comments/123
+
+The function would return:
+
+	/blog/comments/123
+
+**index_page()**
+
+Returns your site "index" page, as specified in your config file. Example:
+
+	echo index_page();
+
+**anchor()**
+
+Creates a standard HTML anchor link based on your local site URL:
+
+	<a href="http://example.com">Click Here</a>
+
+The tag has three optional parameters:
+
+	anchor(uri segments, text, attributes)
+
+The first parameter can contain any segments you wish appended to the URL. As with the site_url() function above, segments can be a string or an array.
+
+> Note:  If you are building links that are internal to your application do not include the base URL (http://...). This will be added automatically from the information specified in your config file. Include only the URI segments you wish appended to the URL.
+
+The second segment is the text you would like the link to say. If you leave it blank, the URL will be used.
+
+The third parameter can contain a list of attributes you would like added to the link. The attributes can be a simple string or an associative array.
+
+Here are some examples:
+
+	echo anchor('news/local/123', 'My News', 'title="News title"');
+
+Would produce: ```<a href="http://example.com/index.php/news/local/123" title="News title">My News</a>```
+
+	echo anchor('news/local/123', 'My News', array('title' => 'The best news!'));
+
+Would produce: ```<a href="http://example.com/index.php/news/local/123" title="The best news!">My News</a>```
+
+**anchor_popup()**
+
+Nearly identical to the ```anchor()``` function except that it opens the URL in a new window. You can specify JavaScript window attributes in the third parameter to control how the window is opened. If the third parameter is not set it will simply open a new window with your own browser settings. Here is an example with attributes:
+
+	$atts = array(
+	              'width'      => '800',
+	              'height'     => '600',
+	              'scrollbars' => 'yes',
+	              'status'     => 'yes',
+	              'resizable'  => 'yes',
+	              'screenx'    => '0',
+	              'screeny'    => '0'
+	            );
+
+	echo anchor_popup('news/local/123', 'Click Me!', $atts);
+
+> Note: The above attributes are the function defaults so you only need to set the ones that are different from what you need. If you want the function to use all of its defaults simply pass an empty array in the third parameter:
+
+	echo anchor_popup('news/local/123', 'Click Me!', array());
+
+**mailto()**
+
+Creates a standard HTML email link. Usage example:
+
+	echo mailto('me@my-site.com', 'Click Here to Contact Me');
+
+As with the ```anchor()``` tab above, you can set attributes using the third parameter.
+
+**safe_mailto()**
+
+Identical to the above function except it writes an obfuscated version of the mailto tag using ordinal numbers written with JavaScript to help prevent the email address from being harvested by spam bots.
+
+**auto_link()**
+
+Automatically turns URLs and email addresses contained in a string into links. Example:
+
+	$string = auto_link($string);
+
+The second parameter determines whether URLs and emails are converted or just one or the other. Default behavior is both if the parameter is not specified. Email links are encoded as safe_mailto() as shown above.
+
+Converts only URLs:
+
+	$string = auto_link($string, 'url');
+	
+Converts only Email addresses:
+
+	$string = auto_link($string, 'email');
+	
+The third parameter determines whether links are shown in a new window. The value can be TRUE or FALSE (boolean):
+
+	$string = auto_link($string, 'both', TRUE);
+
+**url_title()**
+
+Takes a string as input and creates a human-friendly URL string. This is useful if, for example, you have a blog in which you'd like to use the title of your entries in the URL. Example:
+
+	$title = "What's wrong with CSS?";
+
+	$url_title = url_title($title);
+
+	// Produces: Whats-wrong-with-CSS
+		
+The second parameter determines the word delimiter. By default dashes are used. Options are: dash, or underscore:
+
+	$title = "What's wrong with CSS?";
+
+	$url_title = url_title($title, 'underscore');
+
+	// Produces: Whats_wrong_with_CSS
+
+	
+The third parameter determines whether or not lowercase characters are forced. By default they are not. Options are boolean TRUE/FALSE:
+
+	$title = "What's wrong with CSS?";
+
+	$url_title = url_title($title, 'underscore', TRUE);
+
+	// Produces: whats_wrong_with_css
+
+**prep_url()**
+
+This function will add http:// in the event that a scheme is missing from a URL. Pass the URL string to the function like this:
+
+	$url = "example.com";
+
+	$url = prep_url($url);
+	
+**redirect()**
+
+Does a "header redirect" to the URI specified. If you specify the full site URL that link will be build, but for local links simply providing the URI segments to the controller you want to direct to will create the link. The function will build the URL based on your config file values.
+
+The optional second parameter allows you to choose between the "location" method (default) or the "refresh" method. Location is faster, but on Windows servers it can sometimes be a problem. The optional third parameter allows you to send a specific HTTP Response Code - this could be used for example to create 301 redirects for search engine purposes. The default Response Code is 302. The third parameter is only available with 'location' redirects, and not 'refresh'. Examples:
+
+	if ($logged_in == FALSE)
+	{
+	     redirect('/login/form/', 'refresh');
+	}
+
+	// with 301 redirect
+	redirect('/article/13', 'location', 301);
+	
+> Note: In order for this function to work it must be used before anything is outputted to the browser since it utilizes server headers.
+> Note: For very fine grained control over headers, you should use the Output Library's set_header() function.
 
 
 	
@@ -1165,11 +3326,35 @@ Thus we can now use any of CodeIgniter class function.
 
 
 
-Session 5: CodeIgniter Best Practice
-====================================
+Session 5: Best Practice
+========================
+
+As any flexible tools as CodeIgniter can offer, it is always too flexible to enforce a good programming practice. Thus here outlined a simple programming best practice and some specific Codeigniter programming best practice as encountered by writer.
+
+
+MVC programming
+---------------
+
+If you don’t know the MVC pattern read up on it! You’ll learn soon the value of putting the data-access in models, the application logic in controllers and the visuals in views. But if you haven’t done programming in such a pattern before it might take a while to sink in, give it the chance to sink in!
+	
+
+A good guideline is to put as little as possible into your controller. Adhere to the DRY principle: Don’t Repeat Yourself. When functionality is needed in more than one place, create a library, helper or model (depending on what kind of functionality it is). You’ll notice that once you start to grasp the MVC basics this will become habitual and you’ll start to reap the benifits that good clean MVC code bring.
+
+You can read up on MVC in the [CI User Guide](http://codeigniter.com/user_guide/toc.html): MVC, Flow chart, Models, Views & Controllers.
+Or external sources like Wikipedia.
+	
 
 Thin Controller Fat Model
 -------------------------
+
+This is a simple mantra that works like a charm in simplifying Codeigniter codes. Always treat controller as data retriever and sender and model as the data processor. This will simplify controller codes to the point it looks like a map for the application data being manipulated.
+	
+Do the heavier data processing stuff inside Models.
+
+DRY
+---
+Don’t Repeat Yourself. Put shared code where it belongs: in libraries, helpers or models, but not in controllers. Definite rule of thumb: when you’re copy-pasting code, you probably just put it in the wrong place for a second time.
+
 
 Utilize Libraries and Helpers
 -----------------------------
@@ -1177,40 +3362,31 @@ Utilize Libraries and Helpers
 Do then Optimize
 ----------------
 
+Error reporting and debugging
+-----------------------------
 
-Project: News Board (ala HackerNews)
-====================================
+One of the most often made mistakes is to forget to turn off PHP errors or Database errors, both of which are gigantic security riscs. It’s a security risk because you allow an attacker to debug his hacking using the displayed warnings.
 
-Phase 1: Wireframe and UI design (Pen + Paper)
-----------------------------------------------
-	
-Phase 2: Site Structure and Navigation (CI)
--------------------------------------------
-	
-Phase 3: Registration and Login System
---------------------------------------
-	
-Phase 4: News Board CRUD
-------------------------
-	
-Phase 5: Discussion CRUD
-------------------------
+Codeigniter offers [environment settings](http://codeigniter.com/user_guide/general/environments.html) to help with this. On any public site error_reporting should be set to 0 (or at most E_ERROR), database setting db_debug should be set to false and just for extra measure I tend to do a ini_set(‘display_errors’, ‘Off’).
 
-	
+At the same time you should debug your application with error_reporting set to -1 (this will show E_ALL and E_STRICT, E_ALL doesn’t include E_STRICT warnings), and solve every notice and warning before making your application public. You tend to spot “invisible” bugs sooner and thus write better code. (more on the error reporting levels on php.net)
 
+One way to make all of this easy has been for me to set the db_debug value (in the application/config/database.php config file) to a constant I declare MP_DB_DEBUG. And add the following code to the top of the main index.php to replace the error_reporting() declaration when the site is live (will disable all errors):
 
+	ini_set('display_errors', 'Off');
+	error_reporting(0);
+	define('MP_DB_DEBUG', false); 
 
-	
+But when in production or testing phase I’d suggest:
 
+	ini_set('display_errors', 'On');
+	error_reporting(-1);
+	define('MP_DB_DEBUG', true); 
 
-	
-
-
-	
+For even better error reporting Dan Horrigan ported a great error reporting script to CI which you can find on [Github](https://github.com/dhorrigan/codeigniter-uhoh). This must never be switched on in a live-site environment but is a huge help during production and has probably saved me hours already.
 
 
 
-Project 1: Simple ACL with CodeIgniter
 
 
 	
