@@ -424,7 +424,7 @@ Change the **dashboard.php** into this:
 			
 			$data['index'] = $str;
 			
-			$this->load->view('v_dashboard, $data);
+			$this->load->view('v_dashboard', $data);
 		}
 
 		function init_db(){
